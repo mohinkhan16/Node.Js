@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejs-Crud</title>
+</head>
+<body style="background-color: rgb(105, 243, 243);  padding: 200px;">
+
+    <!-- <h1>Student List</h1>
+
+    <a href="/add">Add student</a>
+
+    <ul>
+        <%studentList.forEach((s)=>{%>
+        <li><%=s.name%></li>
+    <%})%>
+
+    </ul> -->
+
+    
+    <h1>Student List</h1>
+
+<a href="/add">Add student</a>
+
+<table border ="1" cellpadding="10">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <% studentList.forEach((s) => { %>
+            <tr>
+                <td><%= s.id %></td>
+                <td><%= s.name %></td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>
+</body>
+</html>
