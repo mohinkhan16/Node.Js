@@ -21,13 +21,16 @@
     
     <h1>Student List</h1>
 
+
+
 <a href="/add">Add student</a>
 
-<table border ="1" cellpadding="10">
+<table border="1" cellpadding="10">
     <thead>
         <tr>
             <th>ID</th>
             <th>Name</th>
+            <th>Action</th>
         </tr>
     </thead>
 
@@ -36,6 +39,10 @@
             <tr>
                 <td><%= s.id %></td>
                 <td><%= s.name %></td>
+                <td>
+                    <a href="/edit/<%= s.id %>">Edit</a>
+                    <a href="/delete/<%= s.id %>">Delete</a>
+                </td>
             </tr>
         <% }) %>
     </tbody>
