@@ -41,7 +41,9 @@
                 <td><%= s.name %></td>
                 <td>
                     <a href="/edit/<%= s.id %>">Edit</a>
-                    <a href="/delete/<%= s.id %>">Delete</a>
+                   <form action="/delete/<%= s.id %>" method="POST" style="display:inline;">
+    <button type="submit">Delete</button>
+</form>
                 </td>
             </tr>
         <% }) %>

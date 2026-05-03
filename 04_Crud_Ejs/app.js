@@ -23,8 +23,6 @@ app.get("/add",(req,res)=>{
     res.render("add")
 })
 
-
-
 app.post("/add",(req,res)=>{
     const{name}=req.body
 
