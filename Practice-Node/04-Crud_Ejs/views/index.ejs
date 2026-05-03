@@ -9,10 +9,20 @@
     
     <h1>Student List</h1>
     <a href="/add">Add Student</a>
-       <ul>
-        <%studentList.forEach((s)=>{%>
-        <li><%=s.name%></li>
-    <%})%>
+      <ul>
+    <% studentList.forEach((s)=>{ %>
+        <li>
+            <%= s.name %>
+
+            <a href="/edit/<%= s.id %>">Edit</a>
+
+            <form action="/delete/<%= s.id %>" method="POST" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+
+        </li>
+    <% }) %>
+</ul>
 
 </body>
 </html>
