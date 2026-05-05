@@ -30,9 +30,14 @@ app.use((req,res)=>{
     res.status(200).send("ok")
 })
 
-//
+//centerlizied
+app.use((err,req,res,next)=>{
+    console.log(err.message)
 
 
+    res.status(error.statusCode || 500)
+    .json({message :error.message || "Internal server error"})
+})
 
 
 const port=5000;
