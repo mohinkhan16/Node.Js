@@ -34,20 +34,43 @@ app.get("/task",(req,res)=>{
     .json({message:"task",task})
 })
 
- 
-app.get("/delete/:id", (req, res) => {
-  const id = Number(req.params.id);
+//specific task seen for 
 
-  const student = task.find((s) => s.id === id);
+app.get("/task/:id",(req,res)=>{
+    const {id}= Number(req.params);
 
-  if (!task) {
-    return res.status(404).json("task not found");
-  }
+    const task=task.find((t)=> t.id === id);
 
-  task = task.filter((s) => s.id !== id);
+    if(!task){
+        return res.status(404).json({success:"true",message:"Task Not Found",task});
+    }
 
-  res.redirect("/");
-});
+    res.status(200).json({success:"true",message:"Task found",task})
+})
+
+
+//creat
+
+app.post("/addTask",(req,res,netx)=>{
+
+    const {task,description} = req.body;
+
+    if(!task || !description){
+        return netx(new httpError("Task or description is requried"),404);
+    }
+
+    const newtask={
+        id:new Date().getTime(),
+        task,
+        description,
+    };
+
+    task.push(newtask);
+
+    res
+    .status(201)
+    .json({success:"true",message:"New task Added ".newtask })
+})
 
 
 const port=5000;
