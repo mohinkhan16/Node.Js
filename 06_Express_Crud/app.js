@@ -10,7 +10,7 @@ app.use(express.json());
 
 const task=[{
     id:1,
-    task:"practice",
+    task:"practice",    
     message:"you want to practice everyday"},
     
     {id:2,
@@ -33,6 +33,22 @@ app.get("/task",(req,res)=>{
     .status(200)
     .json({message:"task",task})
 })
+
+ 
+app.get("/delete/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  const student = task.find((s) => s.id === id);
+
+  if (!task) {
+    return res.status(404).json("task not found");
+  }
+
+  task = task.filter((s) => s.id !== id);
+
+  res.redirect("/");
+});
+
 
 const port=5000;
 
