@@ -61,7 +61,7 @@ app.post("/addTask",(req,res,netx)=>{
 
     const newtask={
         id:new Date().getTime(),
-        task,
+        task,               
         description,
     };
 
@@ -70,6 +70,27 @@ app.post("/addTask",(req,res,netx)=>{
     res
     .status(201)
     .json({success:"true",message:"New task Added ".newtask })
+})
+
+//delete
+
+app.delete("/task/:id",(req,res,next)=>{
+    const id= Number(req.params.id)
+
+
+    const index= task.findIndex((t)=>t.id===id)
+
+       if(index === -1){
+        return next(new httpError("requested route not found", 404))
+    }
+
+    task.splice(index, 1)
+
+    res.status(200).json({
+        success: true,
+        message: "task data deleted successfully"
+    })
+
 })
 
 
