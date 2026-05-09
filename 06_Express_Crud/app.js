@@ -1,104 +1,123 @@
-
-
-import express from "express"
+import express from "express";
 import httpError from "./middelware/httpError.js";
 
 const app = express();
 
 app.use(express.json());
 
+const tasks = [
+  {
+    id: 1,
+    task: "practice",
+    description: "you want to practice everyday",
+  },
 
-const task=[{
-    id:1,
-    task:"practice",    
-    message:"you want to practice everyday"},
-    
-    {id:2,
-    task:"learn",
-    message:"you have to learn New thing"}
-]
+  {
+    id: 2,
+    task: "learn",
+    description: "you have to learn New thing",
+  },
+];
 
-app.get("/",(req,res)=>{
-    res.json("Hello from Server")
-})
-
-app.get("/task",(req,res)=>{
-    if(task.length===0){
-        return res.status(200).json({
-            message:"Task is not availabel"
-        })
-    }
-
-    res
-    .status(200)
-    .json({message:"task",task})
-})
-
-//specific task seen for 
-
-app.get("/task/:id",(req,res)=>{
-    const {id}= Number(req.params);
-
-    const task=task.find((t)=> t.id === id);
-
-    if(!task){
-        return res.status(404).json({success:"true",message:"Task Not Found",task});
-    }
-
-    res.status(200).json({success:"true",message:"Task found",task})
-})
+app.get("/", (req, res) => {
+  res.json("Hello from Server");
+});
 
 
-//creat
+app.get("/task", (req, res) => {
+  if (tasks.length === 0) {
+    return res.status(200).json({
+      success: false,
+      message: "Task is not available",
+    });
+  }
 
-app.post("/addTask",(req,res,netx)=>{
-
-    const {task,description} = req.body;
-
-    if(!task || !description){
-        return netx(new httpError("Task or description is requried"),404);
-    }
-
-    const newtask={
-        id:new Date().getTime(),
-        task,               
-        description,
-    };
-
-    task.push(newtask);
-
-    res
-    .status(201)
-    .json({success:"true",message:"New task Added ".newtask })
-})
-
-//delete
-
-app.delete("/task/:id",(req,res,next)=>{
-    const id= Number(req.params.id)
+  res.status(200).json({
+    success: true,
+    message: "All Tasks",
+    tasks,
+  });
+});
 
 
-    const index= task.findIndex((t)=>t.id===id)
+app.get("/task/:id", (req, res) => {
+  const id = Number(req.params.id);
 
-       if(index === -1){
-        return next(new httpError("requested route not found", 404))
-    }
+  const foundTask = tasks.find((t) => t.id === id);
 
-    task.splice(index, 1)
+  if (!foundTask) {
+    return res.status(404).json({
+      success: false,
+      message: "Task Not Found",
+    });
+  }
 
-    res.status(200).json({
-        success: true,
-        message: "task data deleted successfully"
-    })
+  res.status(200).json({
+    success: true,
+    message: "Task Found",
+    foundTask,
+  });
+});
 
-})
+app.post("/addTask", (req, res, next) => {
+  const { task, description } = req.body;
+
+  if (!task || !description) {
+    return next(
+      new httpError("Task or Description is required", 404)
+    );
+  }
+
+  const newTask = {
+    id: new Date().getTime(),
+    task,
+    description,
+  };
+
+  tasks.push(newTask);
+
+  res.status(201).json({
+    success: true,
+    message: "New Task Added Successfully",
+    newTask,
+  });
+});
+
+app.delete("/task/:id", (req, res, next) => {
+  const id = Number(req.params.id);
+
+  const index = tasks.findIndex((t) => t.id === id);
+
+  if (index === -1) {
+    return next(
+      new httpError("Requested Task Not Found", 404)
+    );
+  }
+
+  tasks.splice(index, 1);
+
+  res.status(200).json({
+    success: true,
+    message: "Task Deleted Successfully",
+  });
+});
+
+app.use((req, res, next) => {
+  next(new httpError("Request Not Found", 404));
+
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || "Something went wrong",
+  });
+  });
 
 
-const port=5000;
+const port = 5000;
 
-app.listen(port,(err)=>{
-    if(err){
-        return console.log(err.message)
-    }
-    console.log(`surver runing ${port}`)
-})
+app.listen(port, (err) => {
+  if (err) {
+    return console.log(err.message);
+  }
+
+  console.log(`Server running on port ${port}`);
+});
