@@ -1,98 +1,146 @@
-
-
 import express from "express"
+import httpError from "./middleware/httpError.js"
 
-import httpError from "./middelWare/httpError.js"
+const app= express()
 
-const app=express()
+app.use(express.json())
 
-app.use(express.json());
+const taskList =[
+    {
+        id: 1,
+        task : "practic",
+        description : "you want to practice everyday"
+    },
+    {
+        id: 2,
+        task : "learn",
+        description : "ou have to learn New thing"
+        },
 
-const taskList=[{
-    id:1,
-    task:"playing",
-    message:"I am playing"
-},
-{
-    id:2,
-    task:"Learn",
-    message:"We won't to Learn new new thing daily "
-}]
+]
 
-app.get("/",(req,res)=>{
-    res.send("Hello from server");
+app.get("/", (req, res, next)=>{
+    res.send("hello from server")
 })
 
-
-app.get("taskList",(req,res)=>{
-    if(task.lenth===0){
+app.get("/taskList", (req, res, next)=>{
+    if(taskList.length ===0){
         return res.status(200).json({
-            message:"task not found"
+            message: "Task not available"
         })
     }
-    
-    res
+
+     res
     .status(200)
-    .json({message:"TaskList",taskList})
+    .json({message : "task list" , taskList});
 })
 
-app.post("/addTask",(req,res,next)=>{
-    const { addtask }=req.body;
 
-    if( !task || !description){
-        return next(
-            new httpError("Task or Description is not requried",404)
-        );
+app.get("/taskList/:id", (req, res, next) => {
+  const id = Number(req.params.id);
+
+  const task = taskList.find((t) => t.id === id);
+
+  if (!task) {
+    return res
+      .status(404)
+      .json({ success: true, message: "no taskData found with this id" });
+  }
+
+  res.status(200).json({ success: true, message: "task found", task });
+
+});
+
+app.post("/addTask", (req, res, next) => {
+  const { task, description } = req.body;
+
+  if (!task || !description) {
+    return next(new httpError("task or description data are required", 400));
+  }
+
+  const newTask = {
+    id: new Date().getTime(),
+    task,
+    description,
+  };
+
+  taskList.push(newTask);
+
+  res
+    .status(201)
+    .json({ success: true, message: "new Task added successfully", newTask });
+});
+
+app.patch("/updateTask/:id", (req, res, next) => {
+  const id = Number(req.params.id);
+
+  const taskData = taskList.find((t) => t.id === id);
+
+  if (!taskData) {
+    return next(new HttpError("task not found with this id for update", 404));
+  }
+
+  const { task, description } = req.body;
+
+  if (task) {
+    taskData.task = task;
+  }
+
+  if (description) {
+    taskData.description = description;
+  }
+
+  if (!task || !description) {
+    return next(new HttpError("task or description data is required", 400));
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "task data updated successfully",
+    taskData,
+  });
+});
+
+app.delete("/taskList/:id", (req, res, next) => {
+
+    const id = Number(req.params.id)
+
+    const index = taskList.findIndex((t) => t.id === id)
+
+    if(index === -1){
+        return next(new httpError("requested route not found", 404))
     }
 
-    const newTask={
-        id:new Date().getTime(),
-        task,
-        description,
-    };
-    task.push(newTask);
+    taskList.splice(index, 1)
 
-    res.status(201).json({
-        success:true,
-        message:"New Task Added Succesfully",
-        newTask
-    });
-});
+    res.status(200).json({
+        success: true,
+        message: "task data deleted successfully"
+    })
 
-app.delete("/task/:id",(req,res,next)=>{
-    const id=Number(req.params.id);
+})
 
-    const index=task.findeIndex((t)=>t.id===id);
+app.use((req, res, next)=>{
+    return next(new httpError ("requested route not found", 404))
+})
 
-    if(index===-1){
-        return next(
-            new httpError("Request not found",404)
-        );
+app.use((error, req, res, next)=>{
+    if(res.headersSent){
+        return next(error)
     }
 
-        task.splice(index,1);
+    res.status(error.statusCode || 500).json({
+        message: error.message || "something want wrong please try again"
+    })
+})
 
-        res.status(200).json({
-            success:true,
-            message:"Task Deleted successfully"
-        });
-});
 
-app.use((req,res,next)=>{
-    next(new httpError("Request not found",404));
+const port = 5000
 
-    res.status(err.statucode || 500).json({
-        success :false,
-        message:err.message || "something went wrong"
-    });
-});
-
-const port =5000;
-
-app.listen(port,(err)=>{
+app.listen(port, (err)=>{
     if(err){
-        return console.log(err.message)
+        console.log(err.message)
     }
-    console.log(`surver is running on ${port}`)
-})
 
+    console.log(`server running on port ${port}`)
+})
