@@ -30,3 +30,6 @@ A simple REST API built with Express.js for managing daily tasks.
 
 ```bash
 git clone <repository-link>
+---
+TotalList:
+<img width="1366" height="768" alt="Screenshot (420)" src="https://github.com/user-attachments/assets/6ed35136-e8dc-4e25-a397-fa938517f12b" />
