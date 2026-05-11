@@ -1,28 +1,28 @@
-# 🚀 Task Manager API
+# Car CRUD API 🚗
 
-A simple REST API built with Express.js for managing daily tasks.
-
----
-
-## ✨ Features
-
-✅ Get All Tasks  
-✅ Get Single Task  
-✅ Add New Task  
-✅ Update Existing Task  
-✅ Delete Task  
-✅ Custom Error Handling  
-✅ JSON Middleware Support  
+A simple Car Management CRUD API built using Node.js and Express.js with custom error handling middleware.
 
 ---
 
-# 🛠 Tech Stack
+## 📌 Features
+
+- Get all cars
+- Get car by ID
+- Add new car
+- Update car details
+- Delete car
+- Custom Error Handling Middleware
+- REST API Implementation
+  
+---
+## 🛠️ Technologies Used
 
 - Node.js
 - Express.js
 - JavaScript
 
 ---
+
 CarList/Read :-
 <img width="1366" height="768" alt="Screenshot (420)" src="https://github.com/user-attachments/assets/99fc3387-f80b-4ac1-bd74-37f364dd667b" />
 
