@@ -1,123 +1,147 @@
-import express from "express";
-import httpError from "./middelware/httpError.js";
+import express from "express"
+import httpError from "./middelware/httpError.js"
 
-const app = express();
+const app=express()
 
-app.use(express.json());
+app.use(express.json())
 
-const tasks = [
+const  taskList=[
   {
-    id: 1,
-    task: "practice",
-    description: "you want to practice everyday",
+    id:1,
+    task:"practices",
+    description:"You have to practice daily"
   },
-
   {
-    id: 2,
-    task: "learn",
-    description: "you have to learn New thing",
-  },
-];
+    id:2,
+    task:"learn",
+    description:"You have to learn new things daily"
+  }
+]
 
-app.get("/", (req, res) => {
-  res.json("Hello from Server");
-});
+app.get("/",(req,res,next)=>{
+  res.send("hello from server")
+})
 
-
-app.get("/task", (req, res) => {
-  if (tasks.length === 0) {
+app.get("taskList",(req,res,next)=>{
+  if(taskList.length===0){
     return res.status(200).json({
-      success: false,
-      message: "Task is not available",
-    });
+      message:"Task not found"
+    })
+  }
+  res
+  .status(200)
+  .json({message:"task list",taskList})
+})
+
+app.get("/taskList/:id",(req,res,next)=>{
+  const id= Number(req.params.id);
+
+  const task = taskList.find((t)=> t.id===id);
+
+
+  if(!task){
+    return res 
+    .status(404)
+    .json({success:true,message:"No taskdata found"})
   }
 
-  res.status(200).json({
-    success: true,
-    message: "All Tasks",
-    tasks,
-  });
+  res.status(200).json({success:true,message:"task found",task})
+
 });
 
+//create
 
-app.get("/task/:id", (req, res) => {
-  const id = Number(req.params.id);
+app.post("/addTask",(req,res,next)=>{
+  const{task,description}=req.body;
 
-  const foundTask = tasks.find((t) => t.id === id);
-
-  if (!foundTask) {
-    return res.status(404).json({
-      success: false,
-      message: "Task Not Found",
-    });
+  if(!task || !description){
+    return next(new httpError("task or description are requeriud",400));
   }
 
-  res.status(200).json({
-    success: true,
-    message: "Task Found",
-    foundTask,
-  });
-});
-
-app.post("/addTask", (req, res, next) => {
-  const { task, description } = req.body;
-
-  if (!task || !description) {
-    return next(
-      new httpError("Task or Description is required", 404)
-    );
-  }
-
-  const newTask = {
-    id: new Date().getTime(),
+  const newTask={
+    id:new Date().getTime(),
     task,
     description,
   };
 
-  tasks.push(newTask);
+  taskList.push(newTask);
 
-  res.status(201).json({
-    success: true,
-    message: "New Task Added Successfully",
-    newTask,
-  });
+  res.status(201)
+  .json({success:true,message:"new task added successfully"})
 });
 
-app.delete("/task/:id", (req, res, next) => {
-  const id = Number(req.params.id);
+//update
+app.patch("/updateTask/:id",(req,res,next)=>{
+  const id=Number(req.params.id);
 
-  const index = tasks.findIndex((t) => t.id === id);
+  const taskData=taskList.find((t)=>t.id===id);
 
-  if (index === -1) {
-    return next(
-      new httpError("Requested Task Not Found", 404)
-    );
+  if(!taskData){
+    return next(new httpError("task and dec not found"),404);
   }
 
-  tasks.splice(index, 1);
+  const {task,description}=req.body;
+
+  if(task){
+    taskData.task=task;
+  }
+
+  if(description){
+    taskData.description=description; 
+   }
+
+   if(!task||!description){
+    return next(new httpError("task or description data is requeried"),400)
+   }
+
+   res.status(200).json({
+    success:true,
+    message:"task data updated successfully ",
+    taskData,
+   });
+})
+
+//delete
+
+app.delete("/taskList/:id",(req,res,next)=>{
+
+  const id= Number(req.params.id)
+
+  const index =taskList.findIndex((t)=>t.id===id)
+
+  if(index === -1){
+    return next(new httpError("requested route not found",404))
+  }
+
+  taskList.splice(index,1)
 
   res.status(200).json({
-    success: true,
-    message: "Task Deleted Successfully",
-  });
-});
-
-app.use((req, res, next) => {
-  next(new httpError("Request Not Found", 404));
-
-  res.status(err.statusCode || 500).json({
-    success: false,
-    message: err.message || "Something went wrong",
-  });
-  });
+    success:true,
+    message:"task data deleted successfully"
+  })
+})
 
 
-const port = 5000;
+app.use((req,res,next)=>{
+  return next(new httpError("reqested route not found"),404);
+})
 
-app.listen(port, (err) => {
-  if (err) {
-    return console.log(err.message);
+app.use((error,req,res,next)=>{
+  if(req.headerSent)
+  {
+    return next(error)
   }
 
-  console.log(`Server running on port ${port}`);
-});
+  res.status(error.statuCode || 500) .json({
+    message:error.message || "something went wrong"
+  })
+})
+
+const port =500
+
+app.listen(port,(err)=>{
+  if(err){
+    console.log(err.message)
+  }
+  console.log(`surver running on port ${port}`);
+})

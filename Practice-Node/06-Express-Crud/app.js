@@ -29,7 +29,6 @@ app.get("/taskList", (req, res, next)=>{
             message: "Task not available"
         })
     }
-
      res
     .status(200)
     .json({message : "task list" , taskList});
@@ -51,6 +50,7 @@ app.get("/taskList/:id", (req, res, next) => {
 
 });
 
+//create  
 app.post("/addTask", (req, res, next) => {
   const { task, description } = req.body;
 
@@ -71,6 +71,7 @@ app.post("/addTask", (req, res, next) => {
     .json({ success: true, message: "new Task added successfully", newTask });
 });
 
+//update
 app.patch("/updateTask/:id", (req, res, next) => {
   const id = Number(req.params.id);
 
@@ -101,6 +102,8 @@ app.patch("/updateTask/:id", (req, res, next) => {
   });
 });
 
+
+//delete
 app.delete("/taskList/:id", (req, res, next) => {
 
     const id = Number(req.params.id)
