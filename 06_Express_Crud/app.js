@@ -22,7 +22,7 @@ app.get("/",(req,res,next)=>{
   res.send("hello from server")
 })
 
-app.get("taskList",(req,res,next)=>{
+app.get("/taskList",(req,res,next)=>{
   if(taskList.length===0){
     return res.status(200).json({
       message:"Task not found"
@@ -127,17 +127,17 @@ app.use((req,res,next)=>{
 })
 
 app.use((error,req,res,next)=>{
-  if(req.headerSent)
+  if(res.headersSent)
   {
     return next(error)
   }
 
-  res.status(error.statuCode || 500) .json({
+  res.status(error.statusCode || 500) .json({
     message:error.message || "something went wrong"
   })
 })
 
-const port =500
+const port =5000;
 
 app.listen(port,(err)=>{
   if(err){
