@@ -1,32 +1,33 @@
-
-import mongoose, { Types } from "mongoose";
+import mongoose from "mongoose";
 
 const StudentSchema = new mongoose.Schema({
 
     name:{
-        Types:String,
+        type:String,
         required:true,
         trim:true
     },
 
     GRID:{
-        Types:Number,
+        type:Number,
         required:true,
         unique:true
     },
 
     email:{
-        Types:String,
+        type:String,
         required:true,
         unique:true
     },
+
     Number:{
-        Types:Number,
+        type:Number,
         required:true,
         min:10
     },
+
     Course:{
-        Types:String,
+        type:String,
         required:true,
         enum:[
             "Full Stack Devloper",
@@ -34,8 +35,10 @@ const StudentSchema = new mongoose.Schema({
             "Video Editing",
             "Ui/Ux"
         ]
-    },
+    }
 
-})
+});
 
-const Student =mongoose.model("StudentData",StudentSchema);
+const Student = mongoose.model("StudentData",StudentSchema);
+
+export default Student;
