@@ -1,6 +1,6 @@
 import httpError from "../middleware/httpError.js";
 
-import Student from "../model/student.js";
+import student from "../model/student.js";
 
 const add = async(req,res,next)=>{
 
@@ -40,7 +40,7 @@ export const creatStudent = async(req,res,next)=>{
 
             return res.status(200).json({
                 success:true,
-                message:" student data added succesfully"
+                message:" student data added successfully"
             });
 
         }
@@ -59,4 +59,42 @@ export const creatStudent = async(req,res,next)=>{
 
 };
 
-export default { add, creatStudent };
+const studentById=async(req,res,next)=>{
+    try{
+        const {id}=req.params;
+
+        const studentData=await student.findById(id);
+        if(!studentData){
+            return next(new httpError("student data not found with this id",404))
+        }
+        res.status(200).json({
+            success:true,
+            message:"Student found",studentData
+        });
+    }catch(error){
+        next(new httpError(error.message,500));
+    }
+};
+
+const deleteById=async(req,res,next)=>{
+
+    try{
+        const {id}=req.params;
+
+        const studentData=await student.findByIdAndDelete(id)
+
+        if(!studentData){
+             return next(new httpError("student data not found with this id",404))
+        }
+        res.status(200).json({
+            success:true,
+            message:"student delete successfully"
+        });
+    }catch(error){
+    next(new httpError(error.message,500));
+}
+}
+
+
+
+export default { add, creatStudent,studentById,deleteById};
