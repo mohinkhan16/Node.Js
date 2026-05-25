@@ -6,4 +6,6 @@ const router = express.Router();
 
 router.post("/add", EmployeeController.add);
 
+router.get("/all",EmployeeController.creatEmployee);
+
 export default router;

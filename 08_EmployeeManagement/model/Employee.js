@@ -38,8 +38,6 @@ const EmployeeSchema = new mongoose.Schema({
         required: true
     }
 
-}, {
-    timestamps: true
 });
 
 const Employee = mongoose.model("EmployeeData", EmployeeSchema);
