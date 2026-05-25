@@ -134,6 +134,47 @@ const updateById = async (req,res,next)=>{
     }
 }
 
+const updateManually = async (req,res,next)=>{
+    try{
+        const {id}= req.params;
+
+        const employeeData = await Employee.findById(id);
+
+        if(!employeeData){
+            return next(new httpError("Employee data not found",404));
+        }
+
+        const Update=object.keys(req.body);
+
+        const AllowFiled=[
+            "name",
+            "MobileNumber",
+            "department"
+        ];
+
+        const isValid=Update.every((update)=> AllowFiled.includes(update));
+
+        if(!isValid){
+            return next(new httpError("invalid Update",404));
+        }
+
+        update.forEach((update)=>{
+            EmployeeData[update]=
+            req.body[update];
+        });
+
+        await employeeData.save();
+
+        res.status(200).json({
+            success:true,
+            message:"employee data update successfully"
+        });
+
+    }catch(error){
+        next(new httpError(error.message,500))
+    }
+}
+
 
 
 export default {
@@ -142,4 +183,6 @@ export default {
     EmployeeById,
     deleteById,
     deleteAllEmployee,
+    updateById,
+    updateManually
 };
