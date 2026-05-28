@@ -23,7 +23,7 @@ const createEvent = async (req,res,next)=>{
             EventDescription,
             TicketPrice,
             EventPoster,
-            EventBanner,
+            EventBanner,    
         });
 
         await newEvent.save();
@@ -34,5 +34,6 @@ const createEvent = async (req,res,next)=>{
         next(new HttpError(error.message,500));
     }
 
-
 }
+
+export default {create}

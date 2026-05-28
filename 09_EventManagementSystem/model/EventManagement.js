@@ -1,6 +1,6 @@
 
 import mongoose from "mongoose"
-import { type } from "os";
+import os from "os";
 
 
 const EventSchema = new mongoose.Schema({
