@@ -1,61 +1,54 @@
 import multer from "multer";
-
 import fs from "fs";
-import { error } from "console";
 
 const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
 
-    destination:(req,file,cb)=>{
+        let foldername = "uploads/";
 
-        let foldername="uploads/"
-
-
-        if(file.fieldname === "EventPoster"){
-            foldername +="EventPoster"
-        }else if(file.fieldname === "EventBanner"){
-            foldername +="EventBanner"
-        }else if(file.fieldname ==="EventSpeaker"){
-            foldername += "EventSpeaker"
-        }else{
-            foldername+="other";
+        if (file.fieldname === "EventPoster") {
+            foldername += "EventPoster";
+        } else if (file.fieldname === "EventBanner") {
+            foldername += "EventBanner";
+        } else if (file.fieldname === "EventSpeaker") {
+            foldername += "EventSpeaker";
+        } else {
+            foldername += "other";
         }
 
+        fs.mkdirSync(foldername, { recursive: true });
 
-        fs.mkdirSync(foldername,{recursive:true})
-
-        cb(null,foldername);
-
+        cb(null, foldername);
     },
-    filename:(req,res,cb)=>{
-        const UniqueId=`${file.originalname}-${Date.now()}-${file.fieldname}`;
 
-        cb(null,UniqueId)
+    filename: (req, file, cb) => {
+        const uniqueId =
+            `${file.originalname}-${Date.now()}-${file.fieldname}`;
+
+        cb(null, uniqueId);
     }
-})
+});
 
+const fileFilter = (req, file, cb) => {
 
-const filedFilter= (req,res,cb)=>{
-
-
-    const Allowed=[
-        "images/png",
-        "images/jpg",
-        "images/jpeg",
+    const allowed = [
+        "image/png",
+        "image/jpg",
+        "image/jpeg",
         "application/pdf",
-    ]
+    ];
 
-    if(Allowed.includes(file.mimetype)){
-        cb(null,true)
-    }else{
-        cb(new error("only jpg,jpeg,and png file are required",400),false)
+    if (allowed.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error("Only jpg, jpeg, png and pdf files are allowed"), false);
     }
-}
+};
 
 const upload = multer({
-
     storage,
     fileFilter,
-    limits:{fileSize:20*1024*1024}
-})
+    limits: { fileSize: 20 * 1024 * 1024 }
+});
 
 export default upload;

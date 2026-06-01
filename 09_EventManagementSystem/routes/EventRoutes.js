@@ -1,15 +1,12 @@
+import express from "express";
 
-import express from "express"
-
-import upload from "./middleware/upload.js";
-
-import httpError from "./middleware/httpError.js";
-
-import Controller from "./Controller/EventController.js";
+import upload from "../middleware/upload.js";
+import controller from "../Controller/EventController.js";
 
 const router = express.Router();
 
-router.post("/add",
+router.post(
+    "/add",
     upload.fields([
         {
             name: "EventPoster",
@@ -23,11 +20,14 @@ router.post("/add",
             name: "EventSpeaker",
             maxCount: 5,
         },
-        {
-            name: "EventDocument",
-            maxCount: 5
-        }
     ]),
-    controller.create
-)
-export default router
+    controller.createEvent
+);
+
+router.get("/", controller.getAllEvent);
+
+router.get("/:id", controller.GetEventById);
+
+router.delete("/:id", controller.DeleteById);
+
+export default router;

@@ -2,12 +2,17 @@ import express from "express";
 import HttpError from "./middleware/HttpError.js";
 import connectDB from "./config/db.js";
 import dotenv from "dotenv";
+import EventManagment from "./routes/EventRoutes.js"
+
+import upload from "./middleware/upload.js";
 
 dotenv.config({ path: "./.env" });
 
 const app = express();
 
 app.use(express.json());
+
+app.use("/event",EventManagment);
 
 app.get("/", (req, res) => {
     res.json({
