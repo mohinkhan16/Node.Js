@@ -14,6 +14,9 @@ const createEvent = async (req, res, next) => {
             TicketPrice
         } = req.body;
 
+            
+        const EventImages = req.files?.eventImages?.map((file) => file.path )|| null;
+
         const EventPoster =
             req?.files?.EventPoster?.[0]?.path || "";
 
@@ -29,6 +32,7 @@ const createEvent = async (req, res, next) => {
             EventVenue,
             EventDescription,
             TicketPrice,
+             EventImages,
             EventPoster,
             EventBanner,
             EventSpeaker
@@ -96,57 +100,144 @@ const GetEventById = async (req, res, next) => {
 
 
 const DeleteById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const event = await Event.findById(id);
+
+    if (!event) {
+      return next(new HttpError("Event not found", 404));
+    }
+
+    const filesToDelete = [
+      event.EventPoster,
+      ...(event.EventBanner || []),
+      ...(event.EventSpeaker || [])
+    ];
+
+    filesToDelete.forEach((file) => {
+      if (file && fs.existsSync(file)) {
+        fs.unlinkSync(file);
+      }
+    });
+
+    await Event.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: "Event deleted successfully"
+    });
+
+  } catch (error) {
+    console.log(error);
+    return next(new HttpError(error.message, 500));
+  }
+};
+
+const UpdateEventData = async (req, res, next) => {
     try {
+        const { id } = req.params;
 
-        const id = req.params.id;
+        const event = await Event.findById(id);
 
-        const eventbyid = await Event.findById(id);
-
-        if (!eventbyid) {
+        if (!event) {
             return next(
                 new HttpError("Event not found", 404)
             );
         }
 
-      if (eventbyid.EventPoster && eventbyid.EventPoster.length > 0) {
-    eventbyid.EventPoster.forEach((poster) => {
-        if (fs.existsSync(poster)) {
-            fs.unlinkSync(poster);
-        }
-    });
-}
+        const updates = Object.keys(req.body);
 
-        if (eventbyid.EventBanner?.length > 0) {
-            eventbyid.EventBanner.forEach((banner) => {
-                if (fs.existsSync(banner)) {
-                    fs.unlinkSync(banner);
+        const allowedFields = [
+            "EventName",
+            "EventDate",
+            "EventVenue",
+            "EventDescription",
+            "TicketPrice"
+        ];
+
+        const isValidUpdate = updates.every((field) =>
+            allowedFields.includes(field)
+        );
+
+        if (!isValidUpdate) {
+            return next(
+                new HttpError("Invalid update fields", 400)
+            );
+        }
+
+        if (req.files?.EventImages) {
+            event.EventImages?.forEach((file) => {
+                if (fs.existsSync(file)) {
+                    fs.unlinkSync(file);
                 }
             });
+
+            event.EventImages = req.files.EventImages.map(
+                (file) => file.path
+            );
         }
 
-        if (eventbyid.EventSpeaker?.length > 0) {
-            eventbyid.EventSpeaker.forEach((speaker) => {
-                if (fs.existsSync(speaker)) {
-                    fs.unlinkSync(speaker);
+        if (req.files?.EventPoster) {
+            if (
+                event.EventPoster &&
+                fs.existsSync(event.EventPoster)
+            ) {
+                fs.unlinkSync(event.EventPoster);
+            }
+
+            event.EventPoster =
+                req.files.EventPoster[0].path;
+        }
+
+        if (req.files?.EventBanner) {
+            event.EventBanner?.forEach((file) => {
+                if (fs.existsSync(file)) {
+                    fs.unlinkSync(file);
                 }
             });
+
+            event.EventBanner = req.files.EventBanner.map(
+                (file) => file.path
+            );
         }
 
-        await eventbyid.deleteOne();
+        if (req.files?.EventSpeaker) {
+            event.EventSpeaker?.forEach((file) => {
+                if (fs.existsSync(file)) {
+                    fs.unlinkSync(file);
+                }
+            });
+
+            event.EventSpeaker = req.files.EventSpeaker.map(
+                (file) => file.path
+            );
+        }
+
+        updates.forEach((field) => {
+            event[field] = req.body[field];
+        });
+
+        await event.save();
 
         res.status(200).json({
             success: true,
-            message: "Event deleted successfully"
+            message: "Event Updated Successfully",
+            event
         });
 
     } catch (error) {
-        next(new HttpError(error.message, 500));
+        console.log(error);
+
+        return next(
+            new HttpError(error.message, 500)
+        );
     }
 };
-
 export default {
     createEvent,
     getAllEvent,
     GetEventById,
-    DeleteById
+    DeleteById,
+    UpdateEventData
 };

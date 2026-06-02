@@ -24,10 +24,26 @@ router.post(
     controller.createEvent
 );
 
+
+router.patch(
+  "/:id",
+
+  upload.fields([
+    { name: "EventImages", maxCount: 3 },
+    { name: "EventPoster", maxCount: 2 },
+    { name: "EventBanner", maxCount: 1 },
+    { name: "EventSpeaker", maxCount: 2 },
+  ]),
+
+  controller.UpdateEventData
+);
+
+
 router.get("/", controller.getAllEvent);
 
 router.get("/:id", controller.GetEventById);
 
 router.delete("/:id", controller.DeleteById);
+
 
 export default router;

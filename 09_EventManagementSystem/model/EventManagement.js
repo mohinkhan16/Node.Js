@@ -29,6 +29,11 @@ const EventSchema = new mongoose.Schema({
         type:Number,
         required:true,
     },
+    
+       EventImages: {
+        type: [String],
+        required: true
+    },
 
     EventPoster:{
         type:[String],
