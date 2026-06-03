@@ -2,7 +2,6 @@ import fs from "fs";
 import HttpError from "../middleware/HttpError.js";
 import Event from "../model/EventManagement.js";
 
-// Create Event
 const createEvent = async (req, res, next) => {
     try {
 
@@ -162,73 +161,42 @@ const UpdateEventData = async (req, res, next) => {
 
         if (!isValidUpdate) {
             return next(
-                new HttpError("Invalid update fields", 400)
+                new HttpError(
+                    "Only allowed fields can be updated",
+                    400
+                )
             );
         }
 
-        if (req.files?.EventImages) {
-            event.EventImages?.forEach((file) => {
-                if (fs.existsSync(file)) {
+ 
+        if (req.files?.eventImages) {
+
+            (event.eventImages || []).forEach((file) => {
+                if (file && fs.existsSync(file)) {
                     fs.unlinkSync(file);
                 }
             });
 
-            event.EventImages = req.files.EventImages.map(
+
+            event.eventImages = req.files.eventImages.map(
                 (file) => file.path
             );
         }
 
-        if (req.files?.EventPoster) {
-            if (
-                event.EventPoster &&
-                fs.existsSync(event.EventPoster)
-            ) {
-                fs.unlinkSync(event.EventPoster);
-            }
-
-            event.EventPoster =
-                req.files.EventPoster[0].path;
-        }
-
-        if (req.files?.EventBanner) {
-            event.EventBanner?.forEach((file) => {
-                if (fs.existsSync(file)) {
-                    fs.unlinkSync(file);
-                }
-            });
-
-            event.EventBanner = req.files.EventBanner.map(
-                (file) => file.path
-            );
-        }
-
-        if (req.files?.EventSpeaker) {
-            event.EventSpeaker?.forEach((file) => {
-                if (fs.existsSync(file)) {
-                    fs.unlinkSync(file);
-                }
-            });
-
-            event.EventSpeaker = req.files.EventSpeaker.map(
-                (file) => file.path
-            );
-        }
-
-        updates.forEach((field) => {
-            event[field] = req.body[field];
+        
+        updates.forEach((update) => {
+            event[update] = req.body[update];
         });
 
         await event.save();
 
         res.status(200).json({
             success: true,
-            message: "Event Updated Successfully",
+            message: "Event data updated successfully",
             event
         });
 
     } catch (error) {
-        console.log(error);
-
         return next(
             new HttpError(error.message, 500)
         );
