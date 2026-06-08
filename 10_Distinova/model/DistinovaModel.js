@@ -32,7 +32,7 @@ const DistinovaSchema=new mongoose.Schema(
     },
     packageImage: {
       type: String,
-      // required: true,
+      
     },
     packageType: {
       type: String,
