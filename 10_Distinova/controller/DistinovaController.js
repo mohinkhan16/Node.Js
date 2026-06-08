@@ -1,5 +1,6 @@
 import Distinova from "../model/DistinovaModel.js";
 import HttpError from "../middleware/httpError.js";
+import httpError from "../middleware/httpError.js";
 
 const add = async (req, res, next) => {
     try {
@@ -56,6 +57,43 @@ const add = async (req, res, next) => {
     }
 };
 
+
+const getAllPackage= async (req,res,next)=>{
+    try{
+        const packages=await Distinova.find();
+
+        res.status(200).json({
+            success:true,
+            count:packages.length,
+            data:packages
+        });
+    }catch(error){
+        next(new httpError(error.message,500))
+    }
+}
+
+const getPackgeById = async (req,res,next)=>{
+    try{
+        const {id}=req.params;
+
+        const packageData=await Distinova.findById(id);
+
+
+        if(!packageData){
+            return next(new httpError("package not found",404));
+        }
+
+        res.status(200).json({
+            success:true,
+            data:packageData,
+        })
+    }catch(error){
+        next(new httpError(error.message,500))
+    }
+}
+
 export default {
     add,
+    getAllPackage,
+    getPackgeById
 };

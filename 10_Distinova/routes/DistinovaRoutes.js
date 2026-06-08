@@ -11,4 +11,8 @@ router.post(
   DistinovaController.add
 );
 
+router.get("/all", DistinovaController.getAllPackage);
+
+router.get("/:id",DistinovaController.getPackgeById)
+
 export default router;
