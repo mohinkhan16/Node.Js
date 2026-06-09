@@ -92,37 +92,31 @@ const GetEventById = async (req, res, next) => {
 
 const DeleteById = async (req, res, next) => {
   try {
-    const id = req.params.id.trim();
+    const {id} = req.params
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return next(new HttpError("Invalid Event ID", 400));
-    }
-
-    const event = await Event.findByIdAndDelete(id);
-
-    if (!event) {
-      return next(new HttpError("Event not found", 404));
+     const deleteEvent = await Event.findByIdAndDelete(id);
+    if (!deleteEvent) {
+      return next(new HttpError("failed to delete event", 400));
     }
 
     const filesToDelete = [
-      ...(event.EventImages || []),
+      ...event.EventImages ,
       event.EventPoster,
-      ...(event.EventBanner || []),
-      ...(event.EventSpeaker || []),
+      ...event.EventBanner,
+      ...event.EventSpeaker,
     ];
 
-    filesToDelete.forEach((file) => {
-      if (file && fs.existsSync(file)) {
+     filesToDelete.forEach((file) => {
+      if (fs.existsSync(file)) {
         fs.unlinkSync(file);
+      } else {
+        return next(new HttpError("failed to delete file"));
       }
     });
 
-    res.status(200).json({
-      success: true,
-      message: "Event deleted successfully",
-    });
+    return res.status(200).json({ success: true, message: "event deleted" });
   } catch (error) {
-    next(new HttpError(error.message, 500));
+    return next(new HttpError(error.message, 500));
   }
 };
 
