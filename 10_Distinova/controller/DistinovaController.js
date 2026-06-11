@@ -92,8 +92,92 @@ const getPackgeById = async (req,res,next)=>{
     }
 }
 
+
+const PackageDelete = async (req,res,next)=>{
+  try{
+    const id = req.params.id;
+
+    const Packages = await Distinova.findById(id);
+    
+    if(!Packages){
+      return next(new HttpError("Distinova not found",404));
+    }
+     await cloudinary.uploader.destroy(Packages.cloudinary_id);
+
+  await Packages.deleteOne()
+
+  res.
+  status(200).
+  json({
+    success:true,
+    message:"Package data delete successfully"
+  })
+  
+  }catch(error){
+    return next(new HttpError("package not fond",500))
+  } 
+}
+
+
+const UpdatePackage =  async(req,res,next)=>{
+    try{
+
+        const id =req.params.id;
+
+        const UPackage= await Distinova.findById(id);
+        
+        if(!UPackage){
+            return next (new HttpError("Distinova not found",404));
+        }
+
+        const Update= Object.keys(req.body);
+
+        const AllowFiled= [
+            "packageName",
+            "price",
+            "startDate",
+            "endDate",
+            "duration",
+            "destination",
+            "packageImage"
+        ];
+
+        const isValidUpdate=Update.every((field)=> 
+            AllowFiled.includes(field),
+    );
+
+    if(!isValidUpdate){
+        return next(new HttpError("only allow field can be updated",500));
+    }
+
+    Update.forEach((Update)=>{
+        UPackage=[Update]=req.body[Update];
+    })
+
+    if(req.file){
+        await cloudinar.uploader.destroy(UPackage.cloudinary_id);
+
+        UPackage.packageImage = req.file.path;
+        UPackage.cloudinary_id=req.file.path;
+    }
+
+    await UPackage.save();
+
+    res.status(200).json({
+        message:"Distinova data successfully update",
+        success:true,
+        UPackage
+        });
+
+    }catch(error){
+    next(new HttpError(error.message,500));
+    }
+}
+
 export default {
     add,
     getAllPackage,
-    getPackgeById
+    getPackgeById,
+    PackageDelete,
+    UpdatePackage
 };

@@ -30,6 +30,11 @@ const DistinovaSchema=new mongoose.Schema(
       required: true,
       trim: true,
     },
+
+    cloudinary_id: {
+      type: String,
+    },
+    
     packageImage: {
       type: String,
       

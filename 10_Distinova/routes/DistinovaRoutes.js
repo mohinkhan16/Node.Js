@@ -13,6 +13,8 @@ router.post(
 
 router.get("/all", DistinovaController.getAllPackage);
 
-router.get("/:id",DistinovaController.getPackgeById)
+router.get("/:id",DistinovaController.getPackgeById);
+
+router.delete("/:id",DistinovaController.PackageDelete);
 
 export default router;
