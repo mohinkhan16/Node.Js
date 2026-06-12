@@ -8,5 +8,9 @@ const router = express.Router();
 
 router.post("/add",controller.add);
 
+router.get("/getAll",controller.getAll);
+
+router.post("/:id",controller.login);
+
 
 export default router;
