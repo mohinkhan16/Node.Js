@@ -1,6 +1,5 @@
-
-
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const UserSchema = new mongoose.Schema({
 
@@ -8,58 +7,57 @@ const UserSchema = new mongoose.Schema({
         type:String,
         required:true,
         trim:true,
-
     },
-    Email :{
+
+    Email:{
         type:String,
         required:true,
         unique:true,
+        validate(value){
+            if(!value.endsWith("@gmail.com")){
+                throw new Error("Please enter valid gmail");
+            }
+        }
     },
 
     Password:{
         type:String,
         required:true,
-        minlength:6,
-        validate:(value)=>{
-            if(!value.endswith("@gmail.com")){
-                throw new Error("password can't cannot be password")
-            }
-        }
-    },
-})
+        minlength:6
+    }
 
-UserSchema.pre("save",async function () {
-    
+});
+
+UserSchema.pre("save", async function(){
+
     const user = this;
 
     if(user.isModified("Password")){
-        user.Password = await bcrypt.hash(user.Password,10)
+        user.Password = await bcrypt.hash(user.Password,10);
     }
+
 });
 
-UserSchema.static.findByCredentials= async function (Email,Password) {
-    
-    try {
-        const user = await this.findOne({Email});
+UserSchema.statics.findByCredentials = async function(Email,Password){
 
-        if(!User){
-            throw new Error("unable to login");
-        }
+    const user = await this.findOne({ Email });
 
-        const isMatch= await bcrypt.compare (Password,user.Password);
-
-        if(!isMatch){
-            throw new Error("unable to login");
-        }
-
-        return user;
-
-    } catch (error) {
-     throw new Error(error.message);   
+    if(!user){
+        throw new Error("Unable to login");
     }
-}
 
+    const isMatch = await bcrypt.compare(
+        Password,
+        user.Password
+    );
 
-const User =mongoose.model("user",UserSchema);
+    if(!isMatch){
+        throw new Error("Unable to login");
+    }
+
+    return user;
+};
+
+const User = mongoose.model("user",UserSchema);
 
 export default User;

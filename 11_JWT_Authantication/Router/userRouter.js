@@ -10,7 +10,8 @@ router.post("/add",controller.add);
 
 router.get("/getAll",controller.getAll);
 
-router.post("/:id",controller.login);
+router.post("/login",controller.login);
 
 
 export default router;
+
