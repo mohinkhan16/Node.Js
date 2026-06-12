@@ -20,13 +20,23 @@ const UserSchema = new mongoose.Schema({
         }
     },
 
-    Password:{
-        type:String,
-        required:true,
-        minlength:6
-    }
+       password: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 6,
+      validate: (value) => {
+        if (value.toLowerCase() === "password") {
+          return "password can't contain password word as password";
+        }
+      },
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
 
-});
 
 UserSchema.pre("save", async function(){
 
