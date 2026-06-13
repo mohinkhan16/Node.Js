@@ -43,30 +43,61 @@ UserSchema.pre("save", async function(){
     const user = this;
 
     if(user.isModified("Password")){
-        user.Password = await bcrypt.hash(user.Password,10);
+        user.password = await bcrypt.hash(user.password,10);
     }
 
 });
 
-UserSchema.statics.findByCredentials = async function(Email,Password){
+UserSchema.statics.findByCredentials = async function (email, password) {
+  try {
+    const user = await this.findOne({ email });
 
-    const user = await this.findOne({ Email });
-
-    if(!user){
-        throw new Error("Unable to login");
+    if (!user) {
+      throw new error("unable to login");
     }
 
-    const isMatch = await bcrypt.compare(
-        Password,
-        user.Password
-    );
+    const isMatched = await bcrypt.compare(password, user.password);
 
-    if(!isMatch){
-        throw new Error("Unable to login");
+    if (!isMatched) {
+      throw new error("unable to login");
     }
 
     return user;
+  } catch (error) {
+    throw new error(error.message);
+  }
 };
+
+
+UserSchema.method.generateAuthToken = async function () {
+    
+    try {
+        
+        const user = this;
+
+        const token=JWT.sign(
+            {_id: user._id.toString()},
+            process.env.JWT_SECRET,
+            {
+                expiresIn:"7d",
+            },
+        ),
+
+        if(!token){
+            throw new Error("failed to generate token");
+        }
+
+        user.tokens = user.tokens.concat({token});
+
+        await user.save();
+
+    } catch (error) {
+        throw new error(error.message);
+    }
+}
+
+
+
 
 const User = mongoose.model("user",UserSchema);
 

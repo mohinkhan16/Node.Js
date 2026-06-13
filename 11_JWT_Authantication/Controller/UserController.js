@@ -1,73 +1,59 @@
-
 import HttpError from "../middleware/HttpError.js";
-import model from "../model/userModel.js";
+import User from "../Model/UserModel.js";
 
-const add = async (req,res,next)=>{
+const add = async (req, res, next) => {
+  try {
+    const { name, Email, password } = req.body;
 
-    try{
+    const newUser = new User({
+      name,
+      Email,
+      password,
+    });
 
-        const {name,Email,Password}=req.body;
+    await newUser.save();
 
-        const newmodel = new model({
-            name,
-            Email,
-            Password
-        });
+    res.status(201).json({
+      success: true,
+      message: "New user added successfully",
+      newUser,
+    });
+  } catch (error) {
+    next(new HttpError(error.message, 500));
+  }
+};
 
-        await newmodel.save();
+const getAll = async (req, res, next) => {
+  try {
+    const users = await User.find();
 
-        res.status(201).json({
-            success:true,
-            message:"New user added successfully",
-            newmodel
-        });
+    res.status(200).json({
+      success: true,
+      message: "All data found successfully",
+      users,
+    });
+  } catch (error) {
+    next(new HttpError(error.message, 500));
+  }
+};
 
-    }catch(error){
+const login = async (req, res, next) => {
+  try {
+    const { Email, password } = req.body;
 
-        next(new HttpError(error.message,500));
+    const user = await User.findByCredentials(
+      Email,
+      password
+    );
 
-    }
-}
-const getAll = async (req,res,next)=>{
-    try {
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user,
+    });
+  } catch (error) {
+    next(new HttpError(error.message, 500));
+  }
+};
 
-        const models = await model.find();
-
-        res.status(200).json({
-            success:true,
-            message:"All data found successfully",
-            models
-        });
-
-    } catch (error) {
-
-        next(new HttpError(error.message,500));
-
-    }
-}
-
-
-const login = async (req,res,next)=>{
-    try {
-
-        const { Email, Password } = req.body;
-
-        const model = await model.findByCredentials(
-            Email,
-            Password
-        );
-
-        res.status(200).json({
-            success:true,
-            message:"Login successful",
-            model
-        });
-
-    } catch(error){
-
-        next(new HttpError(error.message,500));
-
-    }
-}
-
-export default {add,getAll,login}
+export default { add, getAll, login };
