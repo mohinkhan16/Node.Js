@@ -13,6 +13,8 @@ const add = async (req, res, next) => {
 
     await newUser.save();
 
+    const token = await User.generateAuthToken();
+
     res.status(201).json({
       success: true,
       message: "New user added successfully",
@@ -55,5 +57,23 @@ const login = async (req, res, next) => {
     next(new HttpError(error.message, 500));
   }
 };
+
+const AuthLogin = async (req,res,next)=>{
+  try {
+    
+    const user = req.user;
+
+    if(!user){
+      return next(new HttpError("unable to login",401));
+    }
+
+    res.status(200).json({
+      success:true,
+      user
+    })
+  } catch (error) {
+    next(new HttpError(error.message,500));
+  }
+}
 
 export default { add, getAll, login };

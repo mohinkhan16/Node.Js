@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
+import JWT from "jsonwebtoken";
 
 const UserSchema = new mongoose.Schema({
 
@@ -31,9 +32,14 @@ const UserSchema = new mongoose.Schema({
         }
       },
     },
-  },
-  {
-    timestamps: true,
+    tokens:[
+      {
+        token:{
+          type :String,
+          required:true,
+        },
+      },
+    ]
   },
 );
 
