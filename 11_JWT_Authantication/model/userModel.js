@@ -3,108 +3,98 @@ import bcrypt from "bcryptjs";
 import JWT from "jsonwebtoken";
 
 const UserSchema = new mongoose.Schema({
-
-    name:{
-        type:String,
-        required:true,
-        trim:true,
-    },
-
-    Email:{
-        type:String,
-        required:true,
-        unique:true,
-        validate(value){
-            if(!value.endsWith("@gmail.com")){
-                throw new Error("Please enter valid gmail");
-            }
-        }
-    },
-
-       password: {
-      type: String,
-      required: true,
-      trim: true,
-      minlength: 6,
-      validate: (value) => {
-        if (value.toLowerCase() === "password") {
-          return "password can't contain password word as password";
-        }
-      },
-    },
-    tokens:[
-      {
-        token:{
-          type :String,
-          required:true,
-        },
-      },
-    ]
+  name: {
+    type: String,
+    required: true,
+    trim: true,
   },
-);
 
+  Email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate(value) {
+      if (!value.endsWith("@gmail.com")) {
+        throw new Error("Please enter valid gmail");
+      }
+    },
+  },
 
-UserSchema.pre("save", async function(){
+  password: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 6,
+    validate(value) {
+      if (value.toLowerCase() === "password") {
+        throw new Error("Password can't be 'password'");
+      }
+    },
+  },
 
-    const user = this;
-
-    if(user.isModified("Password")){
-        user.password = await bcrypt.hash(user.password,10);
-    }
-
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
-UserSchema.statics.findByCredentials = async function (email, password) {
+UserSchema.pre("save", async function () {
+  const user = this;
+
+  if (user.isModified("password")) {
+    user.password = await bcrypt.hash(user.password, 10);
+  }
+});
+
+UserSchema.statics.findByCredentials = async function (Email, password) {
+
+  console.log("Email:", Email);
+
+  const user = await this.findOne({ Email });
+
+  // console.log("User:", user);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const isMatched = await bcrypt.compare(password, user.password);
+
+  // console.log("Password Match:", isMatched);
+
+  if (!isMatched) {
+    throw new Error("Password incorrect");
+  }
+
+  return user;
+};
+
+UserSchema.methods.generateAuthToken = async function () {
   try {
-    const user = await this.findOne({ email });
+    const user = this;
 
-    if (!user) {
-      throw new error("unable to login");
-    }
+    const token = JWT.sign(
+      { _id: user._id.toString() },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
 
-    const isMatched = await bcrypt.compare(password, user.password);
+    user.tokens = user.tokens.concat({ token });
 
-    if (!isMatched) {
-      throw new error("unable to login");
-    }
+    await user.save();
 
-    return user;
+    return token;
   } catch (error) {
-    throw new error(error.message);
+    throw new Error(error.message);
   }
 };
 
-
-UserSchema.method.generateAuthToken = async function () {
-    
-    try {
-        
-        const user = this;
-
-        const token=JWT.sign(
-            {_id: user._id.toString()},
-            process.env.JWT_SECRET,
-            {
-                expiresIn:"7d",
-            },
-        ),
-
-        if(!token){
-            throw new Error("failed to generate token");
-        }
-
-        user.tokens = user.tokens.concat({token});
-
-        await user.save();
-
-    } catch (error) {
-        throw new error(error.message);
-    }
-}
-
-
-
-
-const User = mongoose.model("user",UserSchema);
+const User = mongoose.model("User", UserSchema);
 
 export default User;
