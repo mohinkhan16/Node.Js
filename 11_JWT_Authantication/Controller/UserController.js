@@ -38,7 +38,7 @@ const getAll = async (req, res, next) => {
   }
 };
 
-const login = async (req, res, next) => {
+const login = async (req, res, next) => { 
   try {
     const { Email, password } = req.body;
 

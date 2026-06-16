@@ -52,7 +52,7 @@ UserSchema.pre("save", async function () {
 
 UserSchema.statics.findByCredentials = async function (Email, password) {
 
-  console.log("Email:", Email);
+  // console.log("Email:", Email);
 
   const user = await this.findOne({ Email });
 
@@ -84,7 +84,7 @@ UserSchema.methods.generateAuthToken = async function () {
         expiresIn: "7d",
       }
     );
-
+    
     user.tokens = user.tokens.concat({ token });
 
     await user.save();
