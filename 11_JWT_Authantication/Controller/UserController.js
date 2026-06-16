@@ -26,7 +26,11 @@ const add = async (req, res, next) => {
 };
 const getAll = async (req, res, next) => {
   try {
-    const users = await User.find();
+    const users = await User.find({});
+
+    if(!users){
+      return next(new HttpError("user not found"));
+    }
 
     res.status(200).json({
       success: true,

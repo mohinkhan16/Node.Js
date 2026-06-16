@@ -18,12 +18,13 @@ const auth = async function (req,res,next) {
         const token=authHeader.replace("Bearer ","");
 
         const decoded= jwt.verify(token,process.env.JWT_SECRET);
+        console.log("decode",decoded)
 
         const user=await User.findOne({
             _id:decoded._id,
             "tokens.token":token,
         });
-
+        console.log("user",user)
         if(!user){
             return next(new HttpError("authentication failed",401));
         }
@@ -32,10 +33,12 @@ const auth = async function (req,res,next) {
 
         req.token = token;
 
-
+        next();
 
     } catch (error) {
         next(new HttpError("authenticating failed"));
     }
 
 }
+
+export default auth;
