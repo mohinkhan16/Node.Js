@@ -14,7 +14,13 @@ router.get("/getAll",controller.getAll);
 
 router.post("/login",controller.login);
 
-router.get("/loginAuth",Auth,controller.AuthLogin)
+router.get("/loginAuth",Auth,controller.AuthLogin);
+
+router.post("/logOut",Auth,controller.logOut);
+
+router.post("/logOutAll",Auth,controller.logOutAll);
+
+router.delete("/DeleteUser",Auth,controller.DeleteUser);
 
 export default router;
 

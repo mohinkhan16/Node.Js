@@ -95,6 +95,6 @@ UserSchema.methods.generateAuthToken = async function () {
   }
 };
 
-const User = mongoose.model || mongoose.model("User", UserSchema);
+const User = mongoose.models.User || mongoose.model("User", UserSchema);
 
 export default User;
