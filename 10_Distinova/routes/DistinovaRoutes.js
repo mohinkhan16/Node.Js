@@ -17,4 +17,6 @@ router.get("/:id",DistinovaController.getPackgeById);
 
 router.delete("/:id",DistinovaController.PackageDelete);
 
+router.put("/:id",DistinovaController.UpdatePackage);
+
 export default router;
