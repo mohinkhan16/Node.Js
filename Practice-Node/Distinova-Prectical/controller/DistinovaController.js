@@ -124,13 +124,65 @@ const PackageDelete = async (req,res,next)=>{
     return next(new HttpError(error.message,500 ));
   }
 }
+const UpdatePackage = async (req, res, next) => {
+  try {
+    const { id } = req.params;
 
+    const packageUpdate = await Distinova.findById(id);
 
+    if (!packageUpdate) {
+      return next(new httpError("Package data not available", 404));
+    }
 
+    const updates = Object.keys(req.body);
+
+    const allowedUpdate = [
+      "packageName",
+      "price",
+      "startDate",
+      "endDate",
+      "destination",
+      "packageType", 
+    ];
+
+    const isValidUpdates = updates.every((field) =>
+      allowedUpdate.includes(field)
+    );
+
+    if (!isValidUpdates) {
+      return next(new httpError("Only allowed fields can be updated", 400));
+    }
+
+    updates.forEach((field) => {
+      packageUpdate[field] = req.body[field];
+    });
+
+    if (req.file) {
+      console.log("Cloudinary ID:", packageUpdate.cloudinary_id);
+
+      await cloudinary.uploader.destroy(packageUpdate.cloudinary_id);
+      console.log("Cloudinary ID:", packageUpdate.cloudinary_id);
+
+      packageUpdate.packageImage = req.file.path;
+      packageUpdate.cloudinary_id = req.file.filename;
+    }
+
+    await packageUpdate.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Package updated successfully",
+      data: packageUpdate,
+    });
+  } catch (error) {
+    console.log(error);
+    next(new httpError(error.message, 500));
+  }
+};
 export default {
     add,
     getAllPackage,
     getPackgeById,
     PackageDelete,
-    
+    UpdatePackage,
 };

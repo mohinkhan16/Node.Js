@@ -15,5 +15,7 @@ router.get("/all", controller.getAllPackage);
 
 router.get("/:id",controller.getPackgeById);
 
-router.delete("/:id",controller.PackageDelete)
+router.delete("/:id",controller.PackageDelete);
+
+router.patch("/:id",upload.single("packageImage"),controller.UpdatePackage);
 export default router;

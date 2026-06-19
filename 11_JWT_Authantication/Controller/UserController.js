@@ -24,6 +24,7 @@ const add = async (req, res, next) => {
     next(new HttpError(error.message, 500));
   }
 };
+
 const getAll = async (req, res, next) => {
   try {
     const users = await User.find({});
