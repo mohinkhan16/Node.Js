@@ -172,4 +172,4 @@ const UpdateUser = async(req,res,next)=>{
 }
 
 
-export default { add, getAll, login,AuthLogin,logOut,logOutAll,DeleteUser };
+export default { add, getAll, login,AuthLogin,logOut,logOutAll,DeleteUser,UpdateUser};

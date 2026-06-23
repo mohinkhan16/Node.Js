@@ -22,5 +22,7 @@ router.post("/logOutAll",Auth,controller.logOutAll);
 
 router.delete("/DeleteUser",Auth,controller.DeleteUser);
 
+router.patch("/:id",Auth,controller.UpdateUser);
+
 export default router;
 
