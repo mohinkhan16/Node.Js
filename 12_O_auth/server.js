@@ -10,7 +10,7 @@ const app = express();
 
 app.set("view engine", "ejs");
 
-app.use("/", router);
+app.use("/auth", router);
 
 app.get("/", (req, res) => {
   res.render("home");
