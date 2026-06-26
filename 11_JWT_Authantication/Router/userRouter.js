@@ -1,5 +1,4 @@
 
-
 import express from "express";
 
 import controller from "../Controller/UserController.js";
