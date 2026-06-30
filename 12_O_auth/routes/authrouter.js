@@ -22,7 +22,7 @@ router.get(
     failureRedirect: "/",
   }),
   (req, res) => {
-    res.send(req.user);
-  }
+    res.render("profile");
+  },
 );
 export default router;
