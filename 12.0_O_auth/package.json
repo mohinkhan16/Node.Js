@@ -1,24 +1,21 @@
 {
-  "name": "12_o_auth",
+  "name": "12.0_o_auth",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
-  "type": "module",
+    "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev":"nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^17.4.2",
-    "ejs": "^6.0.1",
     "express": "^5.2.1",
-    "express-session": "^1.19.0",
-    "mongod": "^2.0.0",
-    "mongoose": "^9.7.2",
+    "mongoose": "^9.7.3",
     "nodemon": "^3.1.14",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0"

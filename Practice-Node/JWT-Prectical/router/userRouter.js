@@ -18,7 +18,9 @@ router.post("/logOut",auth,controller.logOut);
 
 router.post("/logOutAll",auth,controller.logOutAll);
 
-router.delete("/delete",auth,controller.DeleteUser)
+router.delete("/delete",auth,controller.DeleteUser);
+
+router.patch("/update",auth,controller.UpdateUser);
 
 export default router;
 

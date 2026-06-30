@@ -138,6 +138,43 @@ const DeleteUser = async(req,res,next)=>{
   }
 }
 
+const UpdateUser = async(req,res,next)=>{
+  try {
+
+    const user = req.user;
+
+    if(!user){
+      return next(new HttpError("No user found",400));
+    }
+
+    const updates= Object.key(req.body);
+
+    const AllowedFiled=["name","password"];
+
+    const isValid= updates.every((filed)=>AllowedFiled.includes(filed));
+    console.log(isValid);
+
+    if(!isValid){
+      return next(new HttpError("only Allowed filed can be update ",400));
+    }
+
+    updates.forEach((update) => {
+      return (user[update]=req.body[update]);
+    });
+
+ 
+    await user.save();
+
+    res.status(200).json({
+      success:true,
+      message:"user data update",
+      user
+    })
+    
+  } catch (error) {
+    next(new HttpError(error.message,500))
+  }
+}
 
 export default {
   add,
@@ -146,5 +183,7 @@ export default {
   AuthLogin,
   logOut,
   logOutAll,
-  DeleteUser
+  DeleteUser,
+ UpdateUser 
+  
 };
