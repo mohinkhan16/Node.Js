@@ -1,5 +1,6 @@
 import express from "express";
 import passport from "../config/Passport.js";
+import HttpError from "../middleware/HttpError.js";
 
 const router = express.Router();
 
@@ -12,6 +13,7 @@ router.get(
   "/google",
   passport.authenticate("google", {
     scope: ["profile", "email"],
+    prompt: "select_account",
   })
 );
 
@@ -22,7 +24,18 @@ router.get(
     failureRedirect: "/",
   }),
   (req, res) => {
-    res.render("profile");
+    res.redirect("/profile");
   },
 );
+
+//logout
+
+router.get("/logout",(req,res,next)=>{
+  req.logout((err)=>{
+    if(err){
+      next(new HttpError("failed to logout"))
+    }
+  });
+  res.redirect("/");
+})
 export default router;
