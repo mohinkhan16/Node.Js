@@ -1,8 +1,9 @@
 
-
+//third party or extrnal module
 import express from "express"
-
 import dotenv from "dotenv";
+
+//dotenv config
 dotenv.config("./.env");
 import HttpError from "./middleware/HttpError.js";
 import connectDB from "./config/db.js"
@@ -14,17 +15,17 @@ app.use(express.json());
 //routes
 app.use("/user",router);
 
-//home routes
+//home routes / server check
 app.get("/",(req,res)=>{
     res.json({message:"Hello from server"})
 });
 
-//Middleware
+//Middleware /// if route not found
 app.use((req,res,next)=>{
     next(new HttpError("Request route not found",404))
 })
 
-//Error handling
+//  centralize Error handling
 app.use((error,req,res,next)=>{
     if(res.hedersSent){
         return next(error);
@@ -35,6 +36,8 @@ app.use((error,req,res,next)=>{
         message:error.message||"internal server error"
     })
 })
+
+
 
 async function  Startserver() {
     try {
