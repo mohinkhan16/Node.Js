@@ -6,11 +6,13 @@ import dotenv from "dotenv";
 dotenv.config("./.env");
 import HttpError from "./middleware/HttpError.js";
 import connectDB from "./config/db.js"
-
+import router from "./routes/user.routes.js";
 
 const app = express();
-
 app.use(express.json());
+
+//routes
+app.use("/user",router);
 
 //home routes
 app.get("/",(req,res)=>{
