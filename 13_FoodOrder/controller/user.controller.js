@@ -74,5 +74,7 @@ const login = async (req,res,next)=>{
     }
 }
 
+//for user
+
 
 export default {add,getAll,login};
