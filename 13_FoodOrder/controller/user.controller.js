@@ -20,6 +20,8 @@ const add = async (req,res,next)=>{
 
         const user =new User(newUser);
 
+        const token= await user.findByCredentials(email,password)
+        
         await user.save();
 
         res.status(201).json({
@@ -61,11 +63,11 @@ const login = async (req,res,next)=>{
 
         const user=await User.findByCredentials(email,password);
          
-        // const token=await user.generatAuthToken();
+        const token=await user.generatAuthToken();
 
         res.status(200).json({
             success:true,
-            message:"login succesfully",
+            message:"login successfully",
             user,
             
         })
