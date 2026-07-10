@@ -55,6 +55,8 @@ const getAll = async (req,res,next)=>{
     }
 }
 
+//for auth login 
+
 
 //for user login
 const login = async (req,res,next)=>{
