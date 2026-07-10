@@ -57,6 +57,24 @@ const getAll = async (req,res,next)=>{
 
 //for auth login 
 
+const Authlogin =async (req,res,next)=>{
+    try {
+        const user= req.user;
+
+        if(!user){
+            return next(new HttpError("unable to login",401));
+        }
+
+        res.status(200).json({
+            success:true,
+            message:"Auth login successfully",
+            user
+        })
+    } catch (error) {
+        next(new HttpError(error.message,500))
+    }
+}
+
 
 //for user login
 const login = async (req,res,next)=>{
@@ -80,5 +98,21 @@ const login = async (req,res,next)=>{
 
 //for user
 
+const logout = async(req,res,next)=>{
+    try {
+        req.user.token = req.user.token.filter((t)=>t.token !=req.token);
+         
+        req.user.save();
 
-export default {add,getAll,login};
+        req.status(200).json({
+            success:true,
+            message:"user logout successfully"
+        });
+
+    } catch (error) {
+        next(new HttpError(error.message,500))
+    }
+}
+
+
+export default {add,getAll,login,Authlogin};

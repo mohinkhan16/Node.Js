@@ -15,4 +15,7 @@ router.get("/getAll",userController.getAll);
 //for login user by email,password
 router.post("/login",userController.login);
 
+//for auth login
+router.get("/Authlogin",userController.Authlogin);
+
 export default router;
