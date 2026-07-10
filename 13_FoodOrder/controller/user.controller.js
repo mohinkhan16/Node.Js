@@ -114,5 +114,72 @@ const logout = async(req,res,next)=>{
     }
 }
 
+const  logoutAll = async (req,res,next)=>{
+    try {
+        
+        req.user.token = [];
 
-export default {add,getAll,login,Authlogin};
+        req.user.save();
+
+        res.status(200).json({
+            success:true,
+            message:"user logout all successfully",
+        })
+    } catch (error) {
+        next(new HttpError(error.message,500))
+    }
+}
+
+const deleteUser = async (req,res,next)=>{
+    try {
+            const user = req.user;
+
+            await user.deleteOne();
+
+            res.status(200).json({
+                success:true,
+                message:"user deleted successfully"
+            })
+    } catch (error) {
+        next (new HttpError(error.message,500))
+    }
+}
+
+const UpdateUser = async (req,res,next)=>{
+    try {
+        const user = req.user;
+
+        if(!user){
+            return next(new HttpError("No user found"));
+        }
+
+        const update = Object.keys(req.body);
+
+        const AllowedFiled =["name","password"];
+
+        const isValid = update.every((filed)=>AllowedFiled.includes(filed));
+
+        if(!isValid){
+            return next(new next("only allow field can be update",400))
+        }
+
+        update.forEach((update)=>{
+            return (user[update]= req.body[update])
+        })
+
+        await user.save();
+
+        res.status(200).json
+        ({
+            success:true,
+            message:"user data update successfully",
+            user
+        })
+
+    } catch (error) {
+        next(new HttpError(error.message,500))
+    }
+}
+
+
+export default {add,getAll,login,Authlogin,logout,logoutAll,deleteUser,UpdateUser};

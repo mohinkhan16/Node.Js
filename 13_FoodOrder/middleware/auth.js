@@ -1,5 +1,5 @@
 
-import { JsonWebTokenError } from "jsonwebtoken";
+import  JsonWebTokenError  from "jsonwebtoken";
 
 import User from "../model/user.model.js";
 import HttpError from "./HttpError.js";
@@ -24,7 +24,7 @@ const auth = async(req,res,next)=>{
         });
 
         if(!user){
-            return next(new HttpError("authentication failed",401))
+            return next(new HttpError("authentication failed",401));
         }
 
         req.user=user;

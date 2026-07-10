@@ -16,6 +16,15 @@ router.get("/getAll",userController.getAll);
 router.post("/login",userController.login);
 
 //for auth login
-router.get("/Authlogin",userController.Authlogin);
+router.get("/Authlogin",Auth,userController.Authlogin);
+
+
+router.post("/logOut",Auth,controller.logOut);
+
+router.post("/logOutAll",Auth,controller.logOutAll);
+
+router.delete("/DeleteUser",Auth,controller.DeleteUser);
+
+router.patch("/:id",Auth,controller.UpdateUser);
 
 export default router;

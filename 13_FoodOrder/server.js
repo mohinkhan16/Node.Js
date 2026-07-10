@@ -37,8 +37,6 @@ app.use((error,req,res,next)=>{
     })
 })
 
-
-
 async function  Startserver() {
     try {
         await connectDB();
