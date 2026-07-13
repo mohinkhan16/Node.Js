@@ -18,13 +18,16 @@ router.post("/login",userController.login);
 //for auth login
 router.get("/Authlogin",Auth,userController.Authlogin);
 
-
+//for logoutUser
 router.post("/logOut",Auth,controller.logOut);
 
+//for logoutAllUser
 router.post("/logOutAll",Auth,controller.logOutAll);
 
+//for delete
 router.delete("/DeleteUser",Auth,controller.DeleteUser);
 
+//for update
 router.patch("/:id",Auth,controller.UpdateUser);
 
 export default router;
