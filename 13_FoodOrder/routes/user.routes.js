@@ -28,7 +28,7 @@ router.post("/logOutAll", Auth, userController.logoutAll);
 //for delete user
 router.delete("/DeleteUser", Auth, userController.deleteUser);
 
-//for update  user 
+//for update a user 
 router.patch("/:id", Auth, userController.UpdateUser);
 
 export default router;
