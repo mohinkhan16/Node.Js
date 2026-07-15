@@ -56,7 +56,6 @@ const getAll = async (req,res,next)=>{
 }
 
 //for auth login 
-
 const Authlogin =async (req,res,next)=>{
     try {
         const user= req.user;
@@ -74,7 +73,6 @@ const Authlogin =async (req,res,next)=>{
         next(new HttpError(error.message,500))
     }
 }
-
 
 //for user login
 const login = async (req,res,next)=>{
@@ -97,7 +95,6 @@ const login = async (req,res,next)=>{
 }
 
 //for user
-
 const logout = async(req,res,next)=>{
     try {
         req.user.token = req.user.token.filter((t)=>t.token !=req.token);
@@ -114,6 +111,7 @@ const logout = async(req,res,next)=>{
     }
 }
 
+//logout all user 
 const  logoutAll = async (req,res,next)=>{
     try {
         
@@ -130,6 +128,7 @@ const  logoutAll = async (req,res,next)=>{
     }
 }
 
+//delete all user 
 const deleteUser = async (req,res,next)=>{
     try {
             const user = req.user;
@@ -145,6 +144,7 @@ const deleteUser = async (req,res,next)=>{
     }
 }
 
+//user can be update 
 const UpdateUser = async (req,res,next)=>{
     try {
         const user = req.user;

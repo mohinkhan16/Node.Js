@@ -3,6 +3,7 @@ import express from "express";
 import userController from "../controller/user.controller.js";
 import validate from "../middleware/validate.js";
 import UserSchema from "../validation/UserSchema.js";
+import Auth from "../middleware/auth.js"
 
 const router = express.Router();
 
@@ -18,16 +19,16 @@ router.post("/login",userController.login);
 //for auth login
 router.get("/Authlogin",Auth,userController.Authlogin);
 
-//for logoutUser
-router.post("/logOut",Auth,controller.logOut);
+//for logout user
+router.post("/logOut", Auth, userController.logout);
 
-//for logoutAllUser
-router.post("/logOutAll",Auth,controller.logOutAll);
+//for logout all user
+router.post("/logOutAll", Auth, userController.logoutAll);
 
-//for delete
-router.delete("/DeleteUser",Auth,controller.DeleteUser);
+//for delete user
+router.delete("/DeleteUser", Auth, userController.deleteUser);
 
-//for update
-router.patch("/:id",Auth,controller.UpdateUser);
+//for update  user 
+router.patch("/:id", Auth, userController.UpdateUser);
 
 export default router;
