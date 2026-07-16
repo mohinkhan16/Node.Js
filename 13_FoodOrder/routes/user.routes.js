@@ -4,11 +4,13 @@ import userController from "../controller/user.controller.js";
 import validate from "../middleware/validate.js";
 import UserSchema from "../validation/UserSchema.js";
 import Auth from "../middleware/auth.js"
+import checkRole from "../middleware/checkRole.js";
+import User from "../model/user.model.js"
 
 const router = express.Router();
 
 //for add user
-router.post("/add",validate(UserSchema),userController.add);
+router.post("/add",userController.add);
 
 // for getall user
 router.get("/getAll",userController.getAll);
@@ -30,5 +32,8 @@ router.delete("/DeleteUser", Auth, userController.deleteUser);
 
 //for update a user 
 router.patch("/:id", Auth, userController.UpdateUser);
+
+//for check admin user
+router.get("/allUser",Auth,checkRole("admin"),userController.GetAllUser)
 
 export default router;

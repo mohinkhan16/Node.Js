@@ -4,7 +4,7 @@ import express from "express"
 import dotenv from "dotenv";
 
 //dotenv config
-dotenv.config("./.env");
+dotenv.config({path:"./.env"});
 import HttpError from "./middleware/HttpError.js";
 import connectDB from "./config/db.js"
 import router from "./routes/user.routes.js";
