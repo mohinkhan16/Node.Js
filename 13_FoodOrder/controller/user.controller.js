@@ -1,6 +1,7 @@
 
 import  HttpError from "../middleware/HttpError.js";
 import User from "../model/user.model.js";
+import cloudinary from "../config/Cloudniaray.js";
 
 //for user add
 const add = async (req, res, next) => {
@@ -11,7 +12,9 @@ const add = async (req, res, next) => {
             password,
             address,
             PhoneNumber,
-            role
+            role,
+            ProfilePic,
+            cloudinaryId
        
         } = req.body;
 
@@ -21,11 +24,13 @@ const add = async (req, res, next) => {
             password,
             address,
             PhoneNumber,
-            role
+            role,
+            ProfilePic:req.file ? req.file.path :"null",
+            cloudinaryId:req.file ?req.file.filename:"null"
         });
 
-
-    await newUser.save();
+    
+     await newUser.save();
  
     res.status(201).json({ success: true, message: "new User added", newUser });
   } catch (error) {

@@ -36,6 +36,12 @@ const userSchema = new mongoose.Schema({
         enum: ["customer", "provider", "admin"],
         default: "customer"
     },
+    ProfilePic:{
+        type:String
+    }, 
+    cloudinaryId:{
+        type:String
+    },
     isVerified: {
         type: Boolean,
         default: false
@@ -51,6 +57,8 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+
+
 //for password hashing
 userSchema.pre("save",async function () {
     const user = this;

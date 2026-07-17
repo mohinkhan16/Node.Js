@@ -6,11 +6,12 @@ import UserSchema from "../validation/UserSchema.js";
 import Auth from "../middleware/auth.js"
 import checkRole from "../middleware/checkRole.js";
 import User from "../model/user.model.js"
+import upload from "../middleware/upload.js"
 
 const router = express.Router();
 
 //for add user
-router.post("/add",userController.add);
+router.post("/add", upload.single("ProfilePic"), userController.add);
 
 // for getall user
 router.get("/getAll",userController.getAll);
