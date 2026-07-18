@@ -2,7 +2,10 @@
 import express from "express";
 import userController from "../controller/user.controller.js";
 import validate from "../middleware/validate.js";
-import UserSchema from "../validation/UserSchema.js";
+
+import {UserSchema} from "../validation/UserSchema.js";
+import {registerSchema} from "../validation/UserSchema.js";
+ 
 import Auth from "../middleware/auth.js"
 import checkRole from "../middleware/checkRole.js";
 import User from "../model/user.model.js"
@@ -11,7 +14,7 @@ import upload from "../middleware/upload.js"
 const router = express.Router();
 
 //for add user
-router.post("/add", upload.single("ProfilePic"), userController.add);
+router.post("/add",validate(registerSchema),upload.single("ProfilePic"), userController.add);
 
 // for getall user
 router.get("/getAll",userController.getAll);
