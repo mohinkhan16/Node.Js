@@ -38,6 +38,15 @@ router.delete("/DeleteUser", Auth, userController.deleteUser);
 router.patch("/:id", Auth, userController.UpdateUser);
 
 //for check admin user
-router.get("/allUser",Auth,checkRole("admin"),userController.GetAllUser)
+router.get("/allUser",Auth,checkRole("admin"),userController.GetAllUser);
+
+// for admin update 
+router.patch(
+  "/update/:id",
+  auth,
+  checkRole("admin"),
+  upload.single("ProfilePic"),
+  userController.adminUpdate
+);
 
 export default router;

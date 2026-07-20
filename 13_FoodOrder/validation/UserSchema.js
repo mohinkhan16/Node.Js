@@ -40,4 +40,4 @@ export const updateUserSchema=registerSchema
 .messages({
     "object.missing":
     "Name,Address,Phone and Password any one required to update",
-})
+});

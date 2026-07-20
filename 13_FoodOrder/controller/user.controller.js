@@ -206,4 +206,55 @@ const GetAllUser =async (req,res,next)=>{
     }
 }
 
-export default {add,getAll,login,Authlogin,logout,logoutAll,deleteUser,UpdateUser,GetAllUser};
+const adminUpdate = async (req,res,next)=>{
+    try {
+        const user = await User.findById(req.params.id);
+
+        if(!user){
+            return next(new HttpError("user not found",404))
+        }
+
+        const update= Object.keys(req.body);
+
+        const AllowedFiled=[
+            "name",
+            "email",
+            "address",
+            "phoneNumber",
+            "role"
+        ]
+
+        const isValid=update.every(filed =>
+            AllowedFiled.includes(filed)
+        );
+
+        if(!isValid){
+            return next(new HttpError("invalid error",404))
+        }
+
+        if(req.file){
+            if(user.cloudinary_id){
+                await cloudinary.update.destory(user.cloudinary_id);
+            }
+
+            user.ProfilePic = req.file.path;
+            user.cloudinaryId = req.file.filename;
+        }
+
+        update.forEach(filed =>{
+            user[filed]= req.body[filed]
+        });
+
+        await user.save();
+
+        res.status(200).json({
+            success:true,
+            message:"user update successfully",
+            user
+        })
+    } catch (error) {
+        next (new HttpError(error.message,500))
+    }
+}
+
+export default {add,getAll,login,Authlogin,logout,logoutAll,deleteUser,UpdateUser,GetAllUser,adminUpdate};
