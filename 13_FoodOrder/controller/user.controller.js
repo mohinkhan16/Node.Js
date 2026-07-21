@@ -2,6 +2,7 @@
 import  HttpError from "../middleware/HttpError.js";
 import User from "../model/user.model.js";
 import cloudinary from "../config/Cloudniaray.js";
+import { object } from "joi";
 
 //for user add
 const add = async (req, res, next) => {
@@ -136,7 +137,12 @@ const  logoutAll = async (req,res,next)=>{
 //delete all user 
 const deleteUser = async (req,res,next)=>{
     try {
-            const user = req.user;
+
+        const targetUser = req.params.id || req.user._id;
+
+            const user = await User.findById(targetUser);
+
+            await cloudinary.uploader.destroy(user.cloudinaryId)
 
             await user.deleteOne();
 
@@ -149,43 +155,50 @@ const deleteUser = async (req,res,next)=>{
     }
 }
 
-//user can be update 
+//user can be update and admin can be update user also
 const UpdateUser = async (req,res,next)=>{
     try {
-        const user = req.user;
+        const targetUser= req.params.id || req.user_.id;
+        const user = await User.findById(targetUser);
 
-        if(!user){
-            return next(new HttpError("No user found"));
+        const update = object.keys(req.body);
+
+        const allowFiled = ["name","password","phoneNumber"];
+
+        if(req.user.role === "admin"){
+            allowFiled = [...allowFiled,"isVerified"];
         }
 
-        const update = Object.keys(req.body);
+        const isValidUpdate = update.every((filed)=>{
+            return allowFiled.includes(filed)
+        });
 
-        const AllowedFiled =["name","password"];
+        if(!isValidUpdate){
+            return next(new HttpError("only allow filed can be update"))
+        }
 
-        const isValid = update.every((filed)=>AllowedFiled.includes(filed));
-
-        if(!isValid){
-            return next(new next("only allow field can be update",400))
+        if(req.file){
+            if(user.cloudinaryId){
+                await cloudinary.update.destroy(user.cloudinaryId);
+            }
+            user.ProfilePic = req.file.path;
+            user.cloudinaryId= req.file.filename;
         }
 
         update.forEach((update)=>{
-            return (user[update]= req.body[update])
+            user[update]= req.body[update];
         })
 
         await user.save();
 
-        res.status(200).json
-        ({
-            success:true,
-            message:"user data update successfully",
+        res.status(200).json({
+            message:"user data updated successfully",
             user
         })
-
     } catch (error) {
-        next(new HttpError(error.message,500))
+        next(new HttpError(error.message));
     }
 }
-
 
 const GetAllUser =async (req,res,next)=>{
     try {
@@ -206,55 +219,6 @@ const GetAllUser =async (req,res,next)=>{
     }
 }
 
-const adminUpdate = async (req,res,next)=>{
-    try {
-        const user = await User.findById(req.params.id);
 
-        if(!user){
-            return next(new HttpError("user not found",404))
-        }
 
-        const update= Object.keys(req.body);
-
-        const AllowedFiled=[
-            "name",
-            "email",
-            "address",
-            "phoneNumber",
-            "role"
-        ]
-
-        const isValid=update.every(filed =>
-            AllowedFiled.includes(filed)
-        );
-
-        if(!isValid){
-            return next(new HttpError("invalid error",404))
-        }
-
-        if(req.file){
-            if(user.cloudinary_id){
-                await cloudinary.update.destory(user.cloudinary_id);
-            }
-
-            user.ProfilePic = req.file.path;
-            user.cloudinaryId = req.file.filename;
-        }
-
-        update.forEach(filed =>{
-            user[filed]= req.body[filed]
-        });
-
-        await user.save();
-
-        res.status(200).json({
-            success:true,
-            message:"user update successfully",
-            user
-        })
-    } catch (error) {
-        next (new HttpError(error.message,500))
-    }
-}
-
-export default {add,getAll,login,Authlogin,logout,logoutAll,deleteUser,UpdateUser,GetAllUser,adminUpdate};
+export default {add,getAll,login,Authlogin,logout,logoutAll,deleteUser,UpdateUser,GetAllUser}
