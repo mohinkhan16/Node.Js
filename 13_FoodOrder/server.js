@@ -8,6 +8,8 @@ dotenv.config({path:"./.env"});
 import HttpError from "./middleware/HttpError.js";
 import connectDB from "./config/db.js"
 import router from "./routes/user.routes.js";
+import adminrouter from "./routes/adminroutes.js";
+import RestaurantModel from "./model/Resturantmodel.js";
 
 const app = express();
 app.use(express.json());
@@ -53,3 +55,12 @@ async function  Startserver() {
 }
 
 Startserver();
+
+
+async function check() {
+    const RestaurantData = await RestaurantModel.findById("took id their restaurant id")
+    .populate("owner","name email phone")
+    console.log(RestaurantData);
+}
+
+check();

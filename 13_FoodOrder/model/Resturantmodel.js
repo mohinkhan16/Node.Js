@@ -35,6 +35,7 @@ const RestaurantSchema = await mongoose.Schema({
     },
     owner:{
         type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
     },
     RestaurantImage:{
         type:String,

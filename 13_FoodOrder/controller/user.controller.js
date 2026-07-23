@@ -2,7 +2,7 @@
 import  HttpError from "../middleware/HttpError.js";
 import User from "../model/user.model.js";
 import cloudinary from "../config/Cloudniaray.js";
-import { object } from "joi";
+
 
 //for user add
 const add = async (req, res, next) => {
