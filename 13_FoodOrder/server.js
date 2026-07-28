@@ -56,11 +56,47 @@ async function  Startserver() {
 
 Startserver();
 
+//manually using RestaurantModel
 
-async function check() {
-    const RestaurantData = await RestaurantModel.findById("took id their restaurant id")
-    .populate("owner","name email phone")
-    console.log(RestaurantData);
+// async function check() {
+//     const RestaurantData = await RestaurantModel.findById("6a686feeddb0d1364ef39512")
+//     .populate("owner","name email phone")
+//     console.log(RestaurantData);
+// }
+
+// check();
+
+
+// manually using User model
+
+async function relationshipUser() {
+    
+    try {
+        const userData= await modelUser.findById("")
+        .populate("");
+        console.log(userData);
+    
+    } catch (error) {
+    console.log(error.message);
+        
+    }
 }
 
-check();
+relationshipUser();
+
+
+//virtual 
+
+// async function virtualUser() {
+    
+//     try {
+//         const user = await RestaurantModel.findById("").populate("Restaurants");
+//         console.log(user);
+        
+//     } catch (error) {
+//         console.log(error.message);
+        
+//     }
+// }
+
+// virtualUser();

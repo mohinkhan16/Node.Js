@@ -38,6 +38,8 @@ export const updateUserSchema=registerSchema
 .fork(["role","email"],(fields)=>fields.forbidden())
 .or("name","address","phoneNumber","password")
 .messages({
+    "string.hex":"invalid restaurant Id",
+    "string.length":"Restaurant Id must be 24 character ",
     "object.missing":
     "Name,Address,Phone and Password any one required to update",
 });

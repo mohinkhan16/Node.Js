@@ -2,6 +2,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { types } from "joi";
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -45,6 +46,10 @@ const userSchema = new mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false
+    },
+    restaurant:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Restaurant"
     },
     tokens: [
         {
