@@ -25,81 +25,92 @@ const BlogAdd = async (req,res,next) =>{
     }
 }
 
-const getAllBlog  = async (req,res,next)=>{
-    try {
-        const blog = await BlogModel.find().populate("Author name email","-_id");
+const getAllBlog = async (req, res, next) => {
+  try {
+    const blog = await BlogModel.find().populate("Author", "Name Email");
 
-        res.status(201).json({
-            success:true,
-            message:"All bolg find successfully",
-            count:blog.length,
-            blog,
-        });
-    } catch (error) {
-        next(new HttpError(error.message,500))
-    }
+    res.status(200).json({
+      success: true,
+      message: "All blogs fetched successfully",
+      count: blog.length,
+      blog,
+    });
+  } catch (error) {
+    console.log("GetAllBlog Error:", error);   // <-- ye add karo
+    next(new HttpError(error.message, 500));
+  }
 };
+const UpdateBlog = async (req, res, next) => {
+  try {
+    const blog = await BlogModel.findById(req.params.id);
 
-const UpdateBlog =  async (req,res,next)=>{
-    try{
+    if (!blog) {
+      return next(new HttpError("Blog not found", 404));
+    }
+
+    const updates = Object.keys(req.body || {});
+
+    const allowedFields = ["title", "Discription", "Category"];
+
+    const isValidUpdate = updates.every((field) =>
+      allowedFields.includes(field)
+    );
+
+    if (!isValidUpdate) {
+      return next(
+        new HttpError("Only allowed fields can be updated", 400)
+      );
+    }
+
+    if (req.file) {
+      if (blog.cloudinary_id) {
+        await cloudinary.uploader.destroy(blog.cloudinary_id);
+      }
+
+      blog.BlogImg = req.file.path;
+      blog.cloudinary_id = req.file.filename;
+    }
+
+    updates.forEach((field) => {
+      blog[field] = req.body[field];
+    });
+
+    await blog.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Blog updated successfully",
+      blog,
+    });
+
+  } catch (error) {
+    console.log(error);
+    next(new HttpError(error.message, 500));
+  }
+};
+const deleteBlog = async (req, res, next) => {
+    try {
+
         const blog = await BlogModel.findById(req.params.id);
 
-        if(!blog){
-            return next(new HttpError("Blog not found",404));
+        if (!blog) {
+            return next(new HttpError("Blog not found", 404));
         }
 
-        const updates = Object.keys(req.body);
-
-        const allowfeilds = ["title","Discription","Category"];
-
-        const isValidateUpdate = update.every((field)=>
-        allowedfeilds.include(feild),);
-
-        if(!isValidateUpdate){
-            return next(new HttpError("only allowed feilds can be update"));
+        if (blog.cloudinary_id) {
+            await cloudinary.uploader.destroy(blog.cloudinary_id);
         }
 
-        if(req.file){
-            if(blog.cloudinary_id){
-                await cloudinary.uploader.destroy(blog.cloudinary_id);
-            }
-            blog.blogImg = req.file.path;
-            blog.cloudinary_id = req.file.filename;
-        }
+        await blog.deleteOne();
 
-        updates.forEach((feild)=>{
-            blog[feild] = req.body[field];
+        res.status(200).json({
+            success: true,
+            message: "Blog deleted successfully",
         });
 
-        await blog.save();
-
-        res.status(200).json({
-            success:true,
-            message:"Blog update successfully",
-            blog,
-        })
-    }catch(error){
-        next(new HttpError(error.message,500));
-    }
-}
-
-const deleteBlog = async (req,res,next)=>{
-    try {
-        const targetUser=req.params.id;
-
-        const Blog = await BlogModel.findById(targetUser);
-
-        if(req.user.cloudinary_id){
-            await cloudinary.uploader.destroy(Blog.cloudinary_id);
-        }
-        await Blog.deleteOne();
-
-        res.status(200).json({
-            success:true,
-            message:"Blog delete successfully"
-        })
     } catch (error) {
-        next (new HttpError(error.message));
+        console.log(error);
+        next(new HttpError(error.message, 500));
     }
-}
+};
 export default {BlogAdd,getAllBlog,UpdateBlog,deleteBlog};

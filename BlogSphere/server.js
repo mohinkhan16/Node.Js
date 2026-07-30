@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 import HttpError from "./middleware/HttpError.js";
 import connectDB from "./config/db.js";
 import router from "./routes/userRouter.js";
-import BlogRouter from "./routes/BlogRouter.js"
+import BlogRouter from "./routes/BlogRouter.js";
+import AdminRouter from "./routes/adminRouter.js";
 
 dotenv.config({path:"./.env"});
 
@@ -14,6 +15,7 @@ app.use(express.json());
 //router
 app.use("/JWT/auth",router);
 app.use("/blog",BlogRouter);
+app.use("/admin",AdminRouter);
 
 app.get("/",(req,res,next)=>{
     res.status(200),json({success: true,
@@ -55,4 +57,4 @@ async function Startserver() {
         
     }
 }
-Startserver();
+Startserver()

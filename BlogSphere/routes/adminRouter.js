@@ -10,6 +10,6 @@ const router = express.Router();
 
 router.delete("/delete/:id",auth,checkRole("admin"),usercontroller.deleteUser);
 
-router.patch("/update/:id",auth,checkRole("admin").upload.single("BlogImg"),usercontroller.updateUser);
+router.patch("/update/:id",auth,checkRole("admin"),upload.single("BlogImg"),usercontroller.updateUser);
 
 export default router;

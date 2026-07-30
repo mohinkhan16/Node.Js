@@ -145,6 +145,9 @@ const deleteUser = async (req, res, next) => {
   // update user
 const updateUser = async (req, res, next) => {
   try {
+        console.log("Body:", req.body);
+    console.log("File:", req.file)
+    
     const targetedUser = req.params.id || req.user._id;
 
     const user = await modelUser.findById(targetedUser);
@@ -194,6 +197,8 @@ const updateUser = async (req, res, next) => {
 
   } catch (error) {
     console.error(error);
+    console.log(error);
+    
     next(new HttpError(error.message, 500));
   }
 };

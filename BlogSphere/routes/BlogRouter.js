@@ -12,6 +12,17 @@ router.post("/add",auth, upload.single("BlogImg"),Blogcontroller.BlogAdd);
 
 router.get("/getAllBlog",auth,Blogcontroller.getAllBlog);
 
-router.patch("/update/:id",auth,upload.single("BlogImg"),validate(updateBlogSchema),Blogcontroller.UpdateBlog);
+router.patch(
+  "/update/:id",
+  auth,
+  upload.single("BlogImg"),
+ 
+  Blogcontroller.UpdateBlog
+);
 
+router.delete(
+  "/delete/:id",
+  auth,
+  Blogcontroller.deleteBlog,
+);
 export default router;
