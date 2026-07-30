@@ -1,0 +1,47 @@
+import Joi from "joi"
+
+//validation
+
+export const registerSchema = Joi.object({
+    Name:joi.string().min(2).max(30).trim().required().message({
+        "string.base":"Name must be in string formate",
+        "string.min": "Name must be at least 2 character long",
+        "string.max": "Name must be 30 character long",
+        "any.required": "Name ir required",
+    }),
+ Email: Joi.string().email().required().messages({
+    "string.base": "Email must be in String format",
+    "any.required": "Email ir required",
+  }),
+  Password: Joi.string().min(6).max(20).required().messages({
+    "string.base": "Password must be in string format",
+    "string.min": "Password must be at least 6 character long",
+    "string.max": "Password must be 20 character long",
+    "any.required": "Password ir required",
+  }),
+
+  Address: Joi.string().min(5).max(100).required().messages({
+    "string.base": "Address must be in string format",
+    "string.min": "Address must be at least 5 character long",
+    "string.max": "Address must be 100 character long",
+    "any.required": "Address ir required",
+  }),
+  Phone: Joi.string()
+    .pattern(/^[6-9]\d{9}$/)
+    .required()
+    .messages({
+      "string.base": "Phone must be in string format",
+      "string.pattern.base":
+        "Phone number must be a valid 10-digit Indian mobile number",
+      "any.required": "Phone is required",
+    }),
+});
+
+export const updateUserSchema = registerSchema
+  .fork(["Name", "Address", "Phone"], (fields) => fields.optional())
+  .fork(["Role", "Email"], (fields) => fields.forbidden())
+  .or("Name", "Address", "Phone")
+  .messages({
+    "object.missing":
+      "Name, Address, Phone and Password  any one required to update ",
+  });
