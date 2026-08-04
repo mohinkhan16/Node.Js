@@ -36,10 +36,11 @@ const getAllBlog = async (req, res, next) => {
       blog,
     });
   } catch (error) {
-    console.log("GetAllBlog Error:", error);   // <-- ye add karo
+    console.log("GetAllBlog Error:", error);   
     next(new HttpError(error.message, 500));
   }
 };
+
 const UpdateBlog = async (req, res, next) => {
   try {
     const blog = await BlogModel.findById(req.params.id);
@@ -88,6 +89,7 @@ const UpdateBlog = async (req, res, next) => {
     next(new HttpError(error.message, 500));
   }
 };
+
 const deleteBlog = async (req, res, next) => {
     try {
 
