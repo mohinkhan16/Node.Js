@@ -3,6 +3,7 @@ import  HttpError from "../middleware/HttpError.js";
 import User from "../model/user.model.js";
 import cloudinary from "../config/Cloudniaray.js";
 import RestaurantModel from "../model/Resturantmodel.js";
+import userModel from "../model/user.model.js"
 
 //for user add
 const add = async (req, res, next) => {
@@ -64,23 +65,141 @@ const add = async (req, res, next) => {
 
 
 //for how many user there are for check
-const getAll = async (req,res,next)=>{
-    try {
-        const users = await User.find();
+const getAll = async (req, res, next) => {
+  try {
+    let {
+      page = 1,
+      limit = 10,
+      role,
+      search,
+      city,
+      sort = "createdAt",
+      order = "desc",
+    } = req.query;
 
-        if(!users){
-            return next(new HttpError("user not found",404))
-        }
+    page = Number(page);
+    limit = Number(limit);
 
-        res.status(200).json({
-            success:true,
-            message:"All data can found successfully",
-            total:users.length,
-            users
-        })
-    } catch (error) {
-        next(new HttpError(error.message,500))
+    const filter = {};
+
+    if (search) {
+      filter.name = {
+        $regex: search,
+        $options: "i",
+      };
     }
+
+    if (city) {
+      filter.address = {
+        $regex: city,
+        $options: "i",
+      };
+    }
+
+    if (role) {
+      filter.role = role;
+    }
+
+    const sortOption = {
+      [sort]: order === "asc" ? 1 : -1,
+    };
+
+    const totalUser = await User.countDocuments(filter);
+
+    const user = await User.find(filter)
+      .populate("restaurant", "name address -_id")
+      .sort(sortOption)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    if (user.length === 0) {
+      return res.status(404).json({
+        success: true,
+        message: "user not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "user founds",
+      totalUser: totalUser,
+      totalPages: Math.ceil(totalUser / limit),
+      page: page,
+      currentPage: page,
+      user,
+    });
+  } catch (error) {
+    return next(new HttpError(error.message, 500));
+  }
+};
+
+const getAll = async (req,res,next)=>{
+  try {
+    let {
+        page=1,
+        limit=1,
+        isOpen,
+        search,
+        city,
+        sort = "createdAt",
+        order="desc",
+    }=req.query;
+
+    page = Number(page);
+
+    limit=Number(limit);
+
+    const filter = {};
+
+    if(search){
+        filter.userName ={
+            $regex :search,
+            $option :"i",
+        };
+    }
+
+    if(city){
+        filter.city = city;
+    }
+
+    if(isOpen !== undefined){
+        filter.isOpen = isOpen === "true";
+    }
+
+    const sortOption = {
+        [sort] : order === "asc" ?1 :-1
+    };
+
+    const totalUser = await userModel.countDocument(filter);
+
+    const User = await RestaurantModel 
+    .find(filter)
+    .populate("owner","name email address -_id")
+    .sort(sortOption)
+    .skip((page-1)*limit)
+    .limit(limit)
+    .lean()
+
+    if(restaurant.length === 0){
+        res.status(404).json({
+            success:true,
+            message:"restaurant not found"
+        })
+    }
+
+    res.status(200).json({
+        success:true,
+        message:"restaurant founds",
+        totalRestaurant :totalRestaurant,
+        totalPages:Math.ceil(totalRestaurant / page),
+        page:page,
+        currentPage :page,
+        restaurant
+    });
+  } catch (error) {
+        return next(new HttpError(error.message, 500));
+  }
 }
 
 //for auth login 

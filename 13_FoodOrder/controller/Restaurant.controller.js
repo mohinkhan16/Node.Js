@@ -35,22 +35,71 @@ res.status(201).json({
 
 
 const getAll = async (req,res,next)=>{
-    try {
-        const user = await RestaurantModel.find();
+  try {
+    let {
+        page=1,
+        limit=1,
+        isOpen,
+        search,
+        city,
+        sort = "createdAt",
+        order="desc",
+    }=req.query;
 
-        if(!user){
-            return next(new HttpError("unable to login",401));
-        }
+    page = Number(page);
 
-        res.status(201).json({
-            success:true,
-            message:"All Restaurant found successfully",
-            total:user.length,
-            user
-        })
-    } catch (error) {
-        next(new HttpError(error.message,500))
+    limit=Number(limit);
+
+    const filter = {};
+
+    if(search){
+        filter.RestaurantName ={
+            $regex :search,
+            $option :"i",
+        };
     }
+
+    if(city){
+        filter.city = city;
+    }
+
+    if(isOpen !== undefined){
+        filter.isOpen = isOpen === "true";
+    }
+
+    const sortOption = {
+        [sort] : order === "asc" ?1 :-1
+    };
+
+    const totalRestaurant = await RestaurantModel.countDocument(filter);
+
+    const restaurant = await RestaurantModel 
+    .find(filter)
+    .populate("owner","name email address -_id")
+    .sort(sortOption)
+    .skip((page-1)*limit)
+    .limit(limit)
+    .lean()
+
+    if(restaurant.length === 0){
+        res.status(404).json({
+            success:true,
+            message:"restaurant not found"
+        })
+    }
+
+    res.status(200).json({
+        success:true,
+        message:"restaurant founds",
+        totalRestaurant :totalRestaurant,
+        totalPages:Math.ceil(totalRestaurant / page),
+        page:page,
+        currentPage :page,
+        restaurant
+    });
+  } catch (error) {
+        return next(new HttpError(error.message, 500));
+  }
 }
 
 const UpdateRestaurant = async (req,res,next)=>{

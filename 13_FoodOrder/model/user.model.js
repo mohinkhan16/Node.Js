@@ -1,8 +1,6 @@
-
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { types } from "joi";
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -23,7 +21,7 @@ const userSchema = new mongoose.Schema({
                 throw new Error("Password can't be 'password'");
             }
         }
-    }, 
+    },
     address: {
         type: String,
         required: true
@@ -37,19 +35,19 @@ const userSchema = new mongoose.Schema({
         enum: ["customer", "provider", "admin"],
         default: "customer"
     },
-    ProfilePic:{
-        type:String
-    }, 
-    cloudinaryId:{
-        type:String
+    ProfilePic: {
+        type: String
+    },
+    cloudinaryId: {
+        type: String
     },
     isVerified: {
         type: Boolean,
         default: false
     },
-    restaurant:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Restaurant"
+    restaurant: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Restaurant"
     },
     tokens: [
         {
@@ -63,57 +61,55 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
-
-//for password hashing
-userSchema.pre("save",async function () {
+// for password hashing
+userSchema.pre("save", async function () {
     const user = this;
 
-    if(user.isModified("password")){
-        user.password= await bcrypt.hash(user.password,8)
+    if (user.isModified("password")) {
+        user.password = await bcrypt.hash(user.password, 8);
     }
 });
 
-//use for user is valid or not 
-userSchema.statics.findByCredentials = async function (email,password) {
-    
-    const user = await this.findOne({email});
+// check if user credentials are valid
+userSchema.statics.findByCredentials = async function (email, password) {
 
-    if(!user){
-        throw new Error("user not found")
+    const user = await this.findOne({ email });
+
+    if (!user) {
+        throw new Error("user not found");
     }
 
-    const isMatch = await bcrypt.compare(password,user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    if(!isMatch){
-        throw new Error("password incorrect")
+    if (!isMatch) {
+        throw new Error("password incorrect");
     }
     return user;
-}
-
-//Generate Auth Token
-
-userSchema.methods.generateAuthToken = async function () {
-    
-try {
-       const user = this;
-
-    const token =jwt.sign(
-        {_id:user._id.toString() },
-        process.env.JWT_SECRET,
-        {
-            expiresIn:"7d"
-        }
-    );
-    user.token = user.tokens.concat({token})
-
-    await user.save()
-
-    return token; 
-} catch (error) {
-    throw new Error(error.message)
-}   
 };
 
+// Generate Auth Token
+userSchema.methods.generateAuthToken = async function () {
 
-const User = mongoose.model("User",userSchema);
+    try {
+        const user = this;
+
+        const token = jwt.sign(
+            { _id: user._id.toString() },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "7d"
+            }
+        );
+
+        user.tokens = user.tokens.concat({ token }); // fixed: was user.token, now user.tokens
+
+        await user.save();
+
+        return token;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const User = mongoose.model("User", userSchema);
 export default User;
